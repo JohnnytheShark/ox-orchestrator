@@ -730,7 +730,50 @@ document.addEventListener("DOMContentLoaded", () => {
   autoDetectPlatform();
   setupSearchKeyboardShortcuts();
   startTerminalDemo();
+  fetchLatestRelease();
 });
+
+// Dynamic Release Asset Updater via GitHub API
+async function fetchLatestRelease() {
+  try {
+    const res = await fetch("https://api.github.com/repos/JohnnytheShark/ox-orchestrator/releases/latest");
+    if (!res.ok) return;
+    const release = await res.json();
+    if (!release || !release.assets) return;
+
+    // Update release badge text
+    const badge = document.getElementById("latestReleaseBadge");
+    if (badge && release.tag_name) {
+      badge.textContent = `${release.tag_name} Latest Release`;
+    }
+
+    // Map targets to download assets
+    const targets = [
+      "x86_64-unknown-linux-gnu",
+      "x86_64-unknown-linux-musl",
+      "aarch64-unknown-linux-gnu",
+      "aarch64-apple-darwin",
+      "x86_64-pc-windows-msvc"
+    ];
+
+    targets.forEach(t => {
+      const asset = release.assets.find(a => a.name.includes(t) && !a.name.endsWith(".sha256"));
+      if (asset) {
+        const linkEl = document.querySelector(`[data-target="${t}"]`);
+        if (linkEl) {
+          linkEl.href = asset.browser_download_url;
+        }
+        const sizeEl = document.querySelector(`[data-size-target="${t}"]`);
+        if (sizeEl && asset.size) {
+          const mb = (asset.size / (1024 * 1024)).toFixed(1);
+          sizeEl.textContent = `${mb}MB`;
+        }
+      }
+    });
+  } catch (err) {
+    console.debug("Latest release query skipped or rate-limited:", err);
+  }
+}
 
 // Render Documentation Navigation Sidebar
 function renderDocNavList(filter = "") {

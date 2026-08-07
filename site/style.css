@@ -1164,10 +1164,75 @@ code, kbd, pre {
   margin-bottom: 16px;
 }
 
+.release-version-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(46, 160, 67, 0.15);
+  border: 1px solid rgba(46, 160, 67, 0.35);
+  color: #3fb950;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-family: var(--font-mono);
+}
+
+.release-version-pill::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: #3fb950;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #3fb950;
+}
+
 .rc-links {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.rc-download-item {
+  display: flex;
+  align-items: center;
   gap: 8px;
+}
+
+.rc-download-item .btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+}
+
+.asset-size {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: normal;
+  margin-left: 6px;
+}
+
+.rc-checksum {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 8px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.rc-checksum:hover {
+  color: var(--accent-rust);
+  border-color: var(--accent-rust);
+  background: rgba(218, 90, 41, 0.08);
 }
 
 .rc-command-box {

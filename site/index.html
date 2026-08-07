@@ -417,6 +417,12 @@
           <span class="section-tag">Distribution & Artifacts</span>
           <h2 class="section-title">Download Precompiled Binaries</h2>
           <p class="section-desc">Standalone, optimized binaries with Link-Time Optimization (LTO) and zero external runtime dependencies.</p>
+          <div class="section-actions" style="margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+            <span class="release-version-pill" id="latestReleaseBadge">v0.1.0 Latest Release</span>
+            <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases" target="_blank" rel="noopener" class="doc-action-btn" style="display: inline-flex; align-items: center; gap: 6px;">
+              <span>View All Releases on GitHub ↗</span>
+            </a>
+          </div>
         </div>
 
         <div class="release-cards-grid">
@@ -432,9 +438,27 @@
             <div class="rc-body">
               <p>Supports Ubuntu, Debian, Fedora, Arch, Alpine, and RHEL.</p>
               <div class="rc-links">
-                <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-gnu.tar.gz" class="btn btn-sm btn-outline">x86_64 (.tar.gz)</a>
-                <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-musl.tar.gz" class="btn btn-sm btn-outline">musl static (.tar.gz)</a>
-                <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-aarch64-unknown-linux-gnu.tar.gz" class="btn btn-sm btn-outline">aarch64 ARM (.tar.gz)</a>
+                <div class="rc-download-item">
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-x86_64-unknown-linux-gnu.tar.gz" class="btn btn-sm btn-outline" data-target="x86_64-unknown-linux-gnu">
+                    <span>Linux x86_64 (.tar.gz)</span>
+                    <span class="asset-size" data-size-target="x86_64-unknown-linux-gnu">2.5MB</span>
+                  </a>
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-x86_64-unknown-linux-gnu.tar.gz.sha256" target="_blank" class="rc-checksum" title="SHA-256 Checksum">sha256</a>
+                </div>
+                <div class="rc-download-item">
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-x86_64-unknown-linux-musl.tar.gz" class="btn btn-sm btn-outline" data-target="x86_64-unknown-linux-musl">
+                    <span>Linux musl static (.tar.gz)</span>
+                    <span class="asset-size" data-size-target="x86_64-unknown-linux-musl">2.6MB</span>
+                  </a>
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-x86_64-unknown-linux-musl.tar.gz.sha256" target="_blank" class="rc-checksum" title="SHA-256 Checksum">sha256</a>
+                </div>
+                <div class="rc-download-item">
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-aarch64-unknown-linux-gnu.tar.gz" class="btn btn-sm btn-outline" data-target="aarch64-unknown-linux-gnu">
+                    <span>Linux aarch64 ARM (.tar.gz)</span>
+                    <span class="asset-size" data-size-target="aarch64-unknown-linux-gnu">2.3MB</span>
+                  </a>
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-aarch64-unknown-linux-gnu.tar.gz.sha256" target="_blank" class="rc-checksum" title="SHA-256 Checksum">sha256</a>
+                </div>
               </div>
             </div>
           </div>
@@ -444,14 +468,20 @@
             <div class="rc-header">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.85c.66-.8 1.11-1.92.99-3.04-.96.04-2.12.64-2.8 1.44-.6.69-1.12 1.83-.98 2.92 1.07.08 2.13-.52 2.79-1.32z"/></svg>
               <div>
-                <h4>macOS Apple Silicon & Intel</h4>
-                <span class="rc-tag">Native Universal</span>
+                <h4>macOS Apple Silicon</h4>
+                <span class="rc-tag">Native ARM64 / M-Series</span>
               </div>
             </div>
             <div class="rc-body">
               <p>Supports macOS 12+ (Monterey, Ventura, Sonoma, Sequoia).</p>
               <div class="rc-links">
-                <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-aarch64-apple-darwin.tar.gz" class="btn btn-sm btn-outline">Apple Silicon M1/M2/M3/M4 (.tar.gz)</a>
+                <div class="rc-download-item">
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-aarch64-apple-darwin.tar.gz" class="btn btn-sm btn-outline" data-target="aarch64-apple-darwin">
+                    <span>Apple Silicon M1–M4 (.tar.gz)</span>
+                    <span class="asset-size" data-size-target="aarch64-apple-darwin">2.4MB</span>
+                  </a>
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-aarch64-apple-darwin.tar.gz.sha256" target="_blank" class="rc-checksum" title="SHA-256 Checksum">sha256</a>
+                </div>
               </div>
             </div>
           </div>
@@ -468,7 +498,13 @@
             <div class="rc-body">
               <p>Supports Windows 10, Windows 11, and Windows Server.</p>
               <div class="rc-links">
-                <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-pc-windows-msvc.zip" class="btn btn-sm btn-outline">Windows x64 (.zip / .exe)</a>
+                <div class="rc-download-item">
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-x86_64-pc-windows-msvc.zip" class="btn btn-sm btn-outline" data-target="x86_64-pc-windows-msvc">
+                    <span>Windows x64 (.zip / ox.exe)</span>
+                    <span class="asset-size" data-size-target="x86_64-pc-windows-msvc">2.5MB</span>
+                  </a>
+                  <a href="https://github.com/JohnnytheShark/ox-orchestrator/releases/download/v0.1.0/ox-v0.1.0-x86_64-pc-windows-msvc.zip.sha256" target="_blank" class="rc-checksum" title="SHA-256 Checksum">sha256</a>
+                </div>
               </div>
             </div>
           </div>
