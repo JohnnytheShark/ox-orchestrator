@@ -35,14 +35,12 @@ case "${OS}" in
     ;;
   darwin)
     case "${ARCH}" in
-      x86_64)
-        TARGET="x86_64-apple-darwin"
-        ;;
       arm64|aarch64)
         TARGET="aarch64-apple-darwin"
         ;;
       *)
-        echo "[-] Unsupported macOS architecture: ${ARCH}" >&2
+        echo "[-] Precompiled binaries for macOS are available for Apple Silicon (arm64/aarch64)." >&2
+        echo "[-] To install on ${ARCH}, build with cargo: cargo install --git https://github.com/JohnnytheShark/ox-orchestrator ox-cli" >&2
         exit 1
         ;;
     esac

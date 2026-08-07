@@ -43,19 +43,13 @@ jobs:
             archive_ext: tar.gz
             use_cross: true
 
-          # macOS Intel
-          - os: macos-13
-            target: x86_64-apple-darwin
-            binary_name: ox
-            archive_ext: tar.gz
-            use_cross: false
-
-          # macOS Apple Silicon
-          - os: macos-14
+          # macOS Apple Silicon (M1/M2/M3/M4)
+          - os: macos-latest
             target: aarch64-apple-darwin
             binary_name: ox
             archive_ext: tar.gz
             use_cross: false
+
 
           # Windows x86_64
           - os: windows-latest

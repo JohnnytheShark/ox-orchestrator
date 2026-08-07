@@ -53,7 +53,6 @@ Official standalone binaries with LTO optimization:
 | **Linux** | x86_64 (musl static) | [`ox-x86_64-unknown-linux-musl.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-musl.tar.gz) |
 | **Linux** | ARM64 / AArch64 | [`ox-aarch64-unknown-linux-gnu.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-aarch64-unknown-linux-gnu.tar.gz) |
 | **macOS** | Apple Silicon (M1/M2/M3/M4) | [`ox-aarch64-apple-darwin.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-aarch64-apple-darwin.tar.gz) |
-| **macOS** | Intel x86_64 | [`ox-x86_64-apple-darwin.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-apple-darwin.tar.gz) |
 | **Windows** | x86_64 | [`ox-x86_64-pc-windows-msvc.zip`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-pc-windows-msvc.zip) |
 
 ---
