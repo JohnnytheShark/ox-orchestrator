@@ -769,6 +769,14 @@ async function fetchLatestRelease() {
           sizeEl.textContent = `${mb}MB`;
         }
       }
+
+      const shaAsset = release.assets.find(a => a.name.includes(t) && a.name.endsWith(".sha256"));
+      if (shaAsset) {
+        const shaEl = document.querySelector(`[data-checksum-target="${t}"]`);
+        if (shaEl) {
+          shaEl.href = shaAsset.browser_download_url;
+        }
+      }
     });
   } catch (err) {
     console.debug("Latest release query skipped or rate-limited:", err);
