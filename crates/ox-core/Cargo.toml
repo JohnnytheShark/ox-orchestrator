@@ -1,0 +1,21 @@
+[package]
+name = "ox-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Core agent loop, DAG session tree, and context management for ox-orchestrator"
+
+[dependencies]
+ox-security.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+tokio.workspace = true
+futures-util.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile = "3.17"

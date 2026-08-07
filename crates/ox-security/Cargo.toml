@@ -1,0 +1,17 @@
+[package]
+name = "ox-security"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Security, sandboxing, and capability enforcement for ox-orchestrator"
+
+[dependencies]
+thiserror.workspace = true
+zeroize.workspace = true
+serde.workspace = true
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile = "3.17"
+serde_json.workspace = true

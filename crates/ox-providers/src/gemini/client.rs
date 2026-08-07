@@ -1,0 +1,159 @@
+use crate::config::ProviderConfig;
+use crate::error::ProviderError;
+use crate::gemini::mapper::{convert_messages, convert_tools, GeminiGenConfig, GeminiRequest};
+use crate::provider::{LlmProvider, ProviderStream};
+use crate::stream::ChannelStream;
+use async_trait::async_trait;
+use futures_util::TryStreamExt;
+use ox_core::agent::StreamEvent;
+use ox_core::types::{Message, ToolCall, ToolDefinition};
+use reqwest::Client;
+use serde_json::Value;
+use tokio::sync::mpsc;
+
+pub struct GeminiProvider {
+    config: ProviderConfig,
+    client: Client,
+}
+
+impl GeminiProvider {
+    pub fn new(config: ProviderConfig) -> Self {
+        Self {
+            config,
+            client: Client::new(),
+        }
+    }
+}
+
+#[async_trait]
+impl LlmProvider for GeminiProvider {
+    async fn stream_chat(
+        &self,
+        messages: &[Message],
+        tools: &[ToolDefinition],
+    ) -> Result<ProviderStream, ProviderError> {
+        let api_key = self
+            .config
+            .get_api_key()
+            .ok_or_else(|| ProviderError::MissingApiKey("Gemini".to_string()))?;
+
+        let (system_instruction, contents) = convert_messages(messages);
+        let gemini_tools = convert_tools(tools);
+
+        let request_payload = GeminiRequest {
+            contents,
+            system_instruction,
+            tools: gemini_tools,
+            generation_config: Some(GeminiGenConfig {
+                temperature: self.config.temperature,
+                max_output_tokens: self.config.max_tokens,
+            }),
+        };
+
+        let url = format!(
+            "{}/models/{}:streamGenerateContent?alt=sse&key={}",
+            self.config.effective_base_url(),
+            self.config.model,
+            api_key
+        );
+
+        let response = self
+            .client
+            .post(&url)
+            .header("content-type", "application/json")
+            .json(&request_payload)
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let status = response.status().as_u16();
+            let body = response.text().await.unwrap_or_default();
+            return Err(ProviderError::ApiError { status, body });
+        }
+
+        let (tx, rx) = mpsc::channel(100);
+        let mut byte_stream = response.bytes_stream();
+
+        tokio::spawn(async move {
+            let mut buffer = String::new();
+
+            while let Ok(Some(chunk)) = byte_stream.try_next().await {
+                let chunk_str = match std::str::from_utf8(&chunk) {
+                    Ok(s) => s,
+                    Err(_) => continue,
+                };
+                buffer.push_str(chunk_str);
+
+                while let Some(pos) = buffer.find("\n\n") {
+                    let event_block = buffer[..pos].to_string();
+                    buffer = buffer[pos + 2..].to_string();
+
+                    for line in event_block.lines() {
+                        if let Some(data) = line.strip_prefix("data: ") {
+                            if let Ok(v) = serde_json::from_str::<Value>(data.trim()) {
+                                if let Some(candidates) =
+                                    v.get("candidates").and_then(|c| c.as_array())
+                                {
+                                    for candidate in candidates {
+                                        if let Some(content) = candidate.get("content") {
+                                            if let Some(parts) =
+                                                content.get("parts").and_then(|p| p.as_array())
+                                            {
+                                                for part in parts {
+                                                    // Text response
+                                                    if let Some(text) =
+                                                        part.get("text").and_then(|t| t.as_str())
+                                                    {
+                                                        let _ = tx
+                                                            .send(Ok(StreamEvent::TextDelta {
+                                                                text: text.to_string(),
+                                                            }))
+                                                            .await;
+                                                    }
+
+                                                    // Function call
+                                                    if let Some(fc) = part.get("functionCall") {
+                                                        if let Some(name) =
+                                                            fc.get("name").and_then(|n| n.as_str())
+                                                        {
+                                                            let args = fc
+                                                                .get("args")
+                                                                .cloned()
+                                                                .unwrap_or_else(|| {
+                                                                    Value::Object(
+                                                                        serde_json::Map::new(),
+                                                                    )
+                                                                });
+                                                            let call = ToolCall::new(
+                                                                uuid::Uuid::new_v4().to_string(),
+                                                                name,
+                                                                args,
+                                                            );
+                                                            let _ = tx
+                                                                .send(Ok(
+                                                                    StreamEvent::ToolCallStarted {
+                                                                        call,
+                                                                    },
+                                                                ))
+                                                                .await;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        Ok(Box::pin(ChannelStream::new(rx)))
+    }
+
+    fn config(&self) -> &ProviderConfig {
+        &self.config
+    }
+}

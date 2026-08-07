@@ -1,0 +1,57 @@
+[workspace]
+members = [
+    "crates/ox-core",
+    "crates/ox-security",
+    "crates/ox-providers",
+    "crates/ox-tools",
+    "crates/ox-cli",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Johnny Orellana", "ox-orchestrator contributors"]
+license = "Apache-2.0"
+repository = "https://github.com/yak-herd/ox-orchestrator"
+description = "A minimalist, secure, provider-agnostic AI agent harness in Rust."
+
+[workspace.dependencies]
+# Async Runtime & Core Utilities
+tokio = { version = "1.43", features = ["rt-multi-thread", "macros", "io-util", "process", "sync", "time", "fs"] }
+async-trait = "0.1"
+futures-util = { version = "0.3", default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+thiserror = "2.0"
+uuid = { version = "1.13", features = ["v4", "serde"] }
+chrono = { version = "0.4", default-features = false, features = ["std", "clock", "serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt", "env-filter"] }
+
+# HTTP & Streaming
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-native-roots", "json", "stream"] }
+
+# CLI & Terminal UX
+clap = { version = "4.5", features = ["derive", "env"] }
+crossterm = "0.28"
+rustyline = "15.0"
+
+zeroize = { version = "1.8", features = ["derive"] }
+regex = "1.11"
+ignore = "0.4"
+tempfile = "3.17"
+
+# Internal Workspace Crates
+ox-core = { path = "crates/ox-core" }
+ox-security = { path = "crates/ox-security" }
+ox-providers = { path = "crates/ox-providers" }
+ox-tools = { path = "crates/ox-tools" }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

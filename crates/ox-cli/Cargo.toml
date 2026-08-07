@@ -1,0 +1,29 @@
+[package]
+name = "ox-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fast, secure, minimalist CLI and terminal harness for AI coding agents."
+
+[dependencies]
+ox-core.workspace = true
+ox-security.workspace = true
+ox-providers.workspace = true
+ox-tools.workspace = true
+clap.workspace = true
+crossterm.workspace = true
+rustyline.workspace = true
+tokio.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+toml.workspace = true
+thiserror.workspace = true
+uuid.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+futures-util.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+async-trait.workspace = true
