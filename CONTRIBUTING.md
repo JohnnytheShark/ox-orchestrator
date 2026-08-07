@@ -19,7 +19,7 @@ All contributors and maintainers are expected to adhere to our [Code of Conduct]
 
 ### Building the Workspace
 ```bash
-git clone https://github.com/yak-herd/ox-orchestrator.git
+git clone https://github.com/JohnnytheShark/ox-orchestrator.git
 cd ox-orchestrator
 cargo build --workspace
 ```

@@ -398,7 +398,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install ox
         run: |
-          curl -fsSL https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.sh | bash
+          curl -fsSL https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/install.sh | bash
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Run ox automated review
         env:
@@ -488,7 +488,7 @@ The \`.ox/config.json\` file stores workspace-level defaults and external Model 
 
 \`\`\`json
 {
-  "$schema": "https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/schema.json",
+  "$schema": "https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/schema.json",
   "default_provider": "anthropic",
   "default_model": "claude-3-7-sonnet-20250219",
   "base_url": "https://api.anthropic.com/v1",
@@ -802,7 +802,7 @@ function renderActiveDoc(key) {
 
   const githubLink = document.getElementById("viewOnGithubLink");
   if (githubLink) {
-    githubLink.href = `https://github.com/yak-herd/ox-orchestrator/blob/main/docs/${key}`;
+    githubLink.href = `https://github.com/JohnnytheShark/ox-orchestrator/blob/main/docs/${key}`;
   }
 
   const bodyEl = document.getElementById("docRenderedBody");
@@ -888,9 +888,9 @@ function copyCurrentDocMarkdown() {
 
 // Quick Install Switcher
 const INSTALL_COMMANDS = {
-  unix: "curl -fsSL https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.sh | bash",
-  win: "irm https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.ps1 | iex",
-  cargo: "cargo install --git https://github.com/yak-herd/ox-orchestrator ox-cli"
+  unix: "curl -fsSL https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/install.sh | bash",
+  win: "irm https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/install.ps1 | iex",
+  cargo: "cargo install --git https://github.com/JohnnytheShark/ox-orchestrator ox-cli"
 };
 
 function switchInstallTab(osKey) {

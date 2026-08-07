@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # ox-orchestrator Installer for Linux and macOS
-# Usage: curl -fsSL https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/install.sh | bash
 # ==============================================================================
 
 set -euo pipefail
 
-REPO="yak-herd/ox-orchestrator"
+REPO="JohnnytheShark/ox-orchestrator"
+
 GITHUB_API="https://api.github.com/repos/${REPO}/releases/latest"
 
 echo "==========================================================="

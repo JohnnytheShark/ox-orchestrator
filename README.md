@@ -4,8 +4,8 @@
 
 [![Rust](https://img.shields.io/badge/rust-1.80%2B-orange.svg)](https://www.rust-lang.org)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/yak-herd/ox-orchestrator?color=green&label=release)](https://github.com/yak-herd/ox-orchestrator/releases)
-[![Docs](https://img.shields.io/badge/docs-Diátaxis%20Framework-purple.svg)](https://yak-herd.github.io/ox-orchestrator/)
+[![Release](https://img.shields.io/github/v/release/JohnnytheShark/ox-orchestrator?color=green&label=release)](https://github.com/JohnnytheShark/ox-orchestrator/releases)
+[![Docs](https://img.shields.io/badge/docs-Diátaxis%20Framework-purple.svg)](https://JohnnytheShark.github.io/ox-orchestrator/)
 [![Safety](https://img.shields.io/badge/security-path--jailed%20%7C%20env--scrubbed-green.svg)](#security-guarantees)
 
 ---
@@ -14,24 +14,24 @@
 
 ### Linux & macOS (One-Liner)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 ```powershell
-irm https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/install.ps1 | iex
 ```
 
 ### From Source via Cargo
 ```bash
-cargo install --git https://github.com/yak-herd/ox-orchestrator ox-cli
+cargo install --git https://github.com/JohnnytheShark/ox-orchestrator ox-cli
 ```
 
 ---
 
 ## Highlights
 
-* **Single Standalone Executable**: Native machine binary (~12MB) with zero Node.js/Python dependencies.
+* **Single Standalone Executable**: Native machine binary (~5MB) with zero Node.js/Python dependencies.
 * **Kernel-Level Sandboxing (`PathJail`)**: Zero-overhead canonicalization protecting against directory traversal, path escaping, and symlink exploits.
 * **Subprocess Environment Scrubbing (`EnvScrubber`)**: Automatically scrubs API keys (`*_API_KEY`, `*TOKEN*`, `*SECRET*`) from subprocesses and MCP child servers.
 * **Zeroized Memory Credentials**: Overwrites sensitive keys and memory buffers with zeroes upon drop using compiler fences (`zeroize`).
@@ -39,7 +39,7 @@ cargo install --git https://github.com/yak-herd/ox-orchestrator ox-cli
 * **Universal Provider Agnosticism**: First-class streaming support for Anthropic (Claude 3.5 / 3.7 Sonnet), OpenAI (GPT-4o, o1, o3), Google Gemini 2.0, DeepSeek, and local Ollama.
 * **Human-in-the-Loop Gate (HITL)**: Read-only inspection tools run smoothly while mutating operations (`write_file`, `edit_file`, `exec_command`, MCP) require explicit confirmation unless overridden.
 * **Model Context Protocol (MCP)**: Native stdio JSON-RPC 2.0 client to seamlessly connect SQLite, GitHub, Filesystem, or custom MCP servers.
-* **Diátaxis Documentation & Portal**: Complete structured documentation and interactive web app at [yak-herd.github.io/ox-orchestrator](https://yak-herd.github.io/ox-orchestrator/).
+* **Diátaxis Documentation & Portal**: Complete structured documentation and interactive web app at [JohnnytheShark.github.io/ox-orchestrator](https://JohnnytheShark.github.io/ox-orchestrator/).
 
 ---
 
@@ -49,12 +49,12 @@ Official standalone binaries with LTO optimization:
 
 | Platform | Architecture | Binary Package |
 |---|---|---|
-| **Linux** | x86_64 (glibc) | [`ox-x86_64-unknown-linux-gnu.tar.gz`](https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-gnu.tar.gz) |
-| **Linux** | x86_64 (musl static) | [`ox-x86_64-unknown-linux-musl.tar.gz`](https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-musl.tar.gz) |
-| **Linux** | ARM64 / AArch64 | [`ox-aarch64-unknown-linux-gnu.tar.gz`](https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-aarch64-unknown-linux-gnu.tar.gz) |
-| **macOS** | Apple Silicon (M1/M2/M3/M4) | [`ox-aarch64-apple-darwin.tar.gz`](https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-aarch64-apple-darwin.tar.gz) |
-| **macOS** | Intel x86_64 | [`ox-x86_64-apple-darwin.tar.gz`](https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-apple-darwin.tar.gz) |
-| **Windows** | x86_64 | [`ox-x86_64-pc-windows-msvc.zip`](https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-pc-windows-msvc.zip) |
+| **Linux** | x86_64 (glibc) | [`ox-x86_64-unknown-linux-gnu.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-gnu.tar.gz) |
+| **Linux** | x86_64 (musl static) | [`ox-x86_64-unknown-linux-musl.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-musl.tar.gz) |
+| **Linux** | ARM64 / AArch64 | [`ox-aarch64-unknown-linux-gnu.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-aarch64-unknown-linux-gnu.tar.gz) |
+| **macOS** | Apple Silicon (M1/M2/M3/M4) | [`ox-aarch64-apple-darwin.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-aarch64-apple-darwin.tar.gz) |
+| **macOS** | Intel x86_64 | [`ox-x86_64-apple-darwin.tar.gz`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-apple-darwin.tar.gz) |
+| **Windows** | x86_64 | [`ox-x86_64-pc-windows-msvc.zip`](https://github.com/JohnnytheShark/ox-orchestrator/releases/latest/download/ox-x86_64-pc-windows-msvc.zip) |
 
 ---
 
@@ -102,7 +102,7 @@ ox-orchestrator/
 
 ## Documentation
 
-Explore the full documentation online at **[yak-herd.github.io/ox-orchestrator](https://yak-herd.github.io/ox-orchestrator/)** or in [`docs/`](docs/README.md):
+Explore the full documentation online at **[JohnnytheShark.github.io/ox-orchestrator](https://JohnnytheShark.github.io/ox-orchestrator/)** or in [`docs/`](docs/README.md):
 
 * **[Tutorials](docs/tutorials/01_getting_started.md)**: Hands-on learning guides.
 * **[How-To Guides](docs/how_to/configuring_providers.md)**: Recipes for providers, DAG branching, HITL policies, and CI/CD.
@@ -115,4 +115,5 @@ Explore the full documentation online at **[yak-herd.github.io/ox-orchestrator](
 
 Licensed under the Apache License, Version 2.0 ([LICENSE](LICENSE) or http://www.apache.org/licenses/LICENSE-2.0).
 Copyright 2026 Johnny Orellana and ox-orchestrator contributors.
+
 

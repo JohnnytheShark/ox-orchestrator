@@ -13,7 +13,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Johnny Orellana", "ox-orchestrator contributors"]
 license = "Apache-2.0"
-repository = "https://github.com/yak-herd/ox-orchestrator"
+repository = "https://github.com/JohnnytheShark/ox-orchestrator"
 description = "A minimalist, secure, provider-agnostic AI agent harness in Rust."
 
 [workspace.dependencies]

@@ -1,11 +1,11 @@
 # ==============================================================================
 # ox-orchestrator Installer for Windows PowerShell
-# Usage: irm https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.ps1 | iex
+# Usage: irm https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/install.ps1 | iex
 # ==============================================================================
 
 $ErrorActionPreference = "Stop"
 
-$Repo = "yak-herd/ox-orchestrator"
+$Repo = "JohnnytheShark/ox-orchestrator"
 $GitHubApi = "https://api.github.com/repos/$Repo/releases/latest"
 
 Write-Host "===========================================================" -ForegroundColor Cyan
