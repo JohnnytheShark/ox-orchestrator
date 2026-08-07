@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ox-orchestrator | High-Performance, Minimalist & Secure AI Coding Agent in Rust</title>
+  <meta name="description" content="A high-performance, minimalist, and secure AI coding agent harness built in Rust. Standalone native binary with kernel-level path sandboxing, zero-loss DAG session branching, and universal provider streaming.">
+  <meta name="keywords" content="rust, ai agent, ai coding assistant, mcp, model context protocol, llm, anthropic, openai, gemini, deepseek, ollama, diataxis, sandboxing">
+  <meta name="theme-color" content="#0d1117">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="ox-orchestrator — Secure Rust AI Coding Agent">
+  <meta property="og:description" content="Standalone native machine binary (~12MB) with kernel-level sandboxing, DAG session branching, and universal LLM provider support.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://yak-herd.github.io/ox-orchestrator/">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Decorative Mesh -->
+  <div class="bg-glow-mesh"></div>
+
+  <!-- Top Navigation -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-logo" onclick="switchView('home'); return false;">
+        <div class="logo-box">
+          <span class="logo-text">ox</span>
+        </div>
+        <span class="brand-name">ox-orchestrator</span>
+        <span class="brand-badge">v0.1.0</span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#features" onclick="switchView('home');">Features</a>
+        <a href="#diataxis" onclick="switchView('diataxis');">Diátaxis Docs</a>
+        <a href="#demo" onclick="switchView('home');">Interactive Demo</a>
+        <a href="#providers" onclick="switchView('home');">Providers</a>
+        <a href="#download" class="nav-highlight" onclick="switchView('home');">Download Binary</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="search-trigger-btn" id="searchTriggerBtn" title="Search documentation (Cmd+K / Ctrl+K)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <span>Search Docs...</span>
+          <kbd>Ctrl K</kbd>
+        </button>
+        <a href="https://github.com/yak-herd/ox-orchestrator" target="_blank" rel="noopener" class="github-btn" title="GitHub Repository">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>Star</span>
+        </a>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <a href="#features" onclick="closeMobileMenu();">Features</a>
+    <a href="#diataxis" onclick="closeMobileMenu(); switchView('diataxis');">Diátaxis Documentation</a>
+    <a href="#demo" onclick="closeMobileMenu();">Interactive Terminal</a>
+    <a href="#providers" onclick="closeMobileMenu();">Providers & Models</a>
+    <a href="#download" onclick="closeMobileMenu();">Download Binaries</a>
+    <a href="https://github.com/yak-herd/ox-orchestrator" target="_blank" rel="noopener">View on GitHub ↗</a>
+  </div>
+
+  <!-- Main Content Container -->
+  <main id="mainContent">
+
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="container hero-layout">
+        <div class="hero-text">
+          <div class="hero-pill">
+            <span class="pill-dot"></span>
+            <span>Single Native Rust Binary • Zero Node/Python Deps</span>
+          </div>
+          <h1 class="hero-title">
+            The High-Performance, <span class="gradient-text">Jailed AI Agent</span> Harness
+          </h1>
+          <p class="hero-subtitle">
+            <strong>`ox`</strong> is an uncompromising coding agent harness built in pure Rust. Featuring kernel-level <code>PathJail</code> sandboxing, automatic environment secret scrubbing, non-destructive DAG session branching, and universal LLM provider streaming.
+          </p>
+
+          <!-- Quick Install Switcher -->
+          <div class="hero-installer-box">
+            <div class="install-tabs">
+              <button class="inst-tab active" data-os="unix" onclick="switchInstallTab('unix')">Linux / macOS</button>
+              <button class="inst-tab" data-os="win" onclick="switchInstallTab('win')">Windows PowerShell</button>
+              <button class="inst-tab" data-os="cargo" onclick="switchInstallTab('cargo')">Cargo</button>
+            </div>
+            <div class="install-command-wrap">
+              <div class="command-content">
+                <span class="prompt-sym">$</span>
+                <code id="installCommandText">curl -fsSL https://raw.githubusercontent.com/yak-herd/ox-orchestrator/main/install.sh | bash</code>
+              </div>
+              <button class="copy-btn" id="copyInstallBtn" onclick="copyInstallCommand()" title="Copy command">
+                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <span class="copy-label">Copy</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="hero-ctas">
+            <a href="#download" class="btn btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Download v0.1.0 Binary</span>
+            </a>
+            <a href="#diataxis" class="btn btn-secondary" onclick="switchView('diataxis');">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              <span>Explore Diátaxis Docs</span>
+            </a>
+          </div>
+
+          <!-- Feature Badges -->
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-value">~12 MB</div>
+              <div class="stat-label">Single Static Binary</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">&lt; 15 ms</div>
+              <div class="stat-label">Cold Start Time</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">Zero</div>
+              <div class="stat-label">Node / Python Runtime</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">100%</div>
+              <div class="stat-label">Path-Jailed Safety</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal Interactive Simulator -->
+        <div class="hero-terminal-wrap" id="demo">
+          <div class="terminal-card">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <div class="terminal-title">ox chat — session-a1b2c3d4</div>
+              <div class="terminal-badge">LIVE DEMO</div>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+              <!-- Animated Lines injected by JS -->
+            </div>
+            <div class="terminal-footer">
+              <button class="term-action-btn" onclick="restartTerminalDemo()">↻ Replay Demo</button>
+              <span class="term-status">Security: <strong>Path-Jailed & Env-Scrubbed</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CORE ARCHITECTURAL FEATURES -->
+    <section class="section features-section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Security & Performance First</span>
+          <h2 class="section-title">Engineered For Autonomous Precision</h2>
+          <p class="section-desc">Traditional AI agent harnesses rely on bloated runtimes, leaky child processes, and fragile linear histories. `ox` redefines the agent harness from first principles in Rust.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feat-icon feat-icon-rust">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Native Rust Performance</h3>
+            <p>Compiles down to a single ~12MB standalone machine executable with LTO, abort panic, and zero external runtime dependencies. Instant cold starts under 15ms.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feat-icon feat-icon-shield">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Kernel-Level PathJail</h3>
+            <p>Every file access is strictly jailed to the authorized project root via rigorous canonical path checking, preventing symlink traversal and directory climbing attacks.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feat-icon feat-icon-lock">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <h3>Subprocess EnvScrubber</h3>
+            <p>Subprocesses and MCP tools inherit zero sensitive environment variables. API tokens (`*_API_KEY`, `*TOKEN*`, `*SECRET*`) are scrubbed before child process fork.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feat-icon feat-icon-dag">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </div>
+            <h3>Non-Destructive Session DAG</h3>
+            <p>Never lose prior context. Conversational turns form an immutable directed acyclic graph. Branch, rewind (`/undo`), and checkout alternative reasoning trails safely.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feat-icon feat-icon-mcp">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M6 10V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v5"/></svg>
+            </div>
+            <h3>Model Context Protocol (MCP)</h3>
+            <p>Native JSON-RPC 2.0 stdio client integrates external tools effortlessly (SQLite, GitHub, Puppeteer, file systems) with sandboxed tool execution.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feat-icon feat-icon-ai">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </div>
+            <h3>Zero-Memory Secret Zeroization</h3>
+            <p>Sensitive credentials in memory implement Rust's <code>zeroize::Zeroize</code> trait, clearing sensitive key bytes with compiler memory fences when dropped.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DIATAXIS QUADRANT FRAMEWORK SECTION -->
+    <section class="section diataxis-section" id="diataxis">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Documentation Architecture</span>
+          <h2 class="section-title">Structured by the Diátaxis Framework</h2>
+          <p class="section-desc">Clear, purposeful technical documentation organized into four user-centered quadrants: learning, problem solving, information lookup, and deep architectural rationale.</p>
+        </div>
+
+        <!-- Diataxis Interactive Matrix -->
+        <div class="diataxis-quadrant-grid">
+          
+          <!-- Quadrant 1: Tutorials -->
+          <div class="quadrant-card q-tutorials" onclick="openDiataxisDoc('tutorials/01_getting_started.md')">
+            <div class="q-header">
+              <span class="q-badge">🎓 LEARNING-ORIENTED</span>
+              <span class="q-axis">Practical Acquisition</span>
+            </div>
+            <h3 class="q-title">Tutorials</h3>
+            <p class="q-desc">Step-by-step guided lessons for newcomers to take their first successful steps with `ox`.</p>
+            <ul class="q-links">
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('tutorials/01_getting_started.md'); event.stopPropagation();">→ Getting Started with ox</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('tutorials/02_custom_mcp_integration.md'); event.stopPropagation();">→ Custom MCP Server Integration</a></li>
+            </ul>
+          </div>
+
+          <!-- Quadrant 2: How-To Guides -->
+          <div class="quadrant-card q-howto" onclick="openDiataxisDoc('how_to/configuring_providers.md')">
+            <div class="q-header">
+              <span class="q-badge">🛠️ PROBLEM-ORIENTED</span>
+              <span class="q-axis">Practical Application</span>
+            </div>
+            <h3 class="q-title">How-To Guides</h3>
+            <p class="q-desc">Task-focused recipes to solve real-world problems in configuration, security, and CI/CD.</p>
+            <ul class="q-links">
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('how_to/configuring_providers.md'); event.stopPropagation();">→ Configuring LLM Providers</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('how_to/session_branching_and_checkpoints.md'); event.stopPropagation();">→ DAG Session Branching & Checkpoints</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('how_to/human_in_the_loop_policies.md'); event.stopPropagation();">→ Human-in-the-Loop Security Policies</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('how_to/running_in_ci_cd.md'); event.stopPropagation();">→ Running Batch Jobs in CI/CD</a></li>
+            </ul>
+          </div>
+
+          <!-- Quadrant 3: Reference -->
+          <div class="quadrant-card q-reference" onclick="openDiataxisDoc('reference/cli_reference.md')">
+            <div class="q-header">
+              <span class="q-badge">📖 INFORMATION-ORIENTED</span>
+              <span class="q-axis">Theoretical Application</span>
+            </div>
+            <h3 class="q-title">Reference</h3>
+            <p class="q-desc">Authoritative, comprehensive technical facts, CLI specs, configuration schemas, and security contracts.</p>
+            <ul class="q-links">
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/cli_reference.md'); event.stopPropagation();">→ CLI Flags & Slash Commands</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/configuration_schema.md'); event.stopPropagation();">→ Configuration Schema (.ox/config.json)</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/crate_architecture.md'); event.stopPropagation();">→ Crate Architecture & APIs</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/security_model.md'); event.stopPropagation();">→ Security Model Guarantees</a></li>
+            </ul>
+          </div>
+
+          <!-- Quadrant 4: Explanation -->
+          <div class="quadrant-card q-explanation" onclick="openDiataxisDoc('explanation/architecture_overview.md')">
+            <div class="q-header">
+              <span class="q-badge">💡 UNDERSTANDING-ORIENTED</span>
+              <span class="q-axis">Theoretical Acquisition</span>
+            </div>
+            <h3 class="q-title">Explanation</h3>
+            <p class="q-desc">Deep background discussion, architectural philosophy, design trade-offs, and comparison studies.</p>
+            <ul class="q-links">
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('explanation/architecture_overview.md'); event.stopPropagation();">→ Architecture Overview & Why Rust</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('explanation/session_dag_vs_linear_history.md'); event.stopPropagation();">→ DAG State vs Linear History</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('explanation/sandboxing_philosophy.md'); event.stopPropagation();">→ Sandboxing & Defense-in-Depth</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('explanation/pi_comparison.md'); event.stopPropagation();">→ Evolution from Pi to ox</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- Integrated Documentation Viewer & Reader -->
+        <div class="doc-viewer-container" id="diataxis-viewer">
+          <div class="doc-sidebar">
+            <div class="doc-sidebar-header">
+              <span class="sidebar-title">Diátaxis Explorer</span>
+              <span class="doc-count">14 Guides</span>
+            </div>
+            <div class="doc-search-box">
+              <input type="text" id="docFilterInput" placeholder="Filter articles..." oninput="filterDocsList()">
+            </div>
+            <div class="doc-nav-list" id="docNavList">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+          <div class="doc-content-pane">
+            <div class="doc-toolbar">
+              <div class="doc-breadcrumbs" id="docBreadcrumbs">Tutorials / Getting Started</div>
+              <div class="doc-toolbar-actions">
+                <button class="doc-action-btn" onclick="copyCurrentDocMarkdown()" title="Copy Markdown">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span>Copy MD</span>
+                </button>
+                <a id="viewOnGithubLink" href="https://github.com/yak-herd/ox-orchestrator" target="_blank" rel="noopener" class="doc-action-btn">
+                  <span>GitHub ↗</span>
+                </a>
+              </div>
+            </div>
+            <article class="doc-body" id="docRenderedBody">
+              <!-- Rendered Markdown Content Injected Here -->
+            </article>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PROVIDER & MODEL MATRIX -->
+    <section class="section providers-section" id="providers">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Universal Compatibility</span>
+          <h2 class="section-title">Zero Vendor Lock-In</h2>
+          <p class="section-desc">Seamless streaming SSE integrations for the world's most powerful frontier models and local private inference engines.</p>
+        </div>
+
+        <div class="provider-cards-grid">
+          <div class="provider-card">
+            <div class="p-header">
+              <div class="p-logo p-anthropic">Claude</div>
+              <span class="p-status">Recommended</span>
+            </div>
+            <h4>Anthropic</h4>
+            <p class="p-models">Claude 3.7 Sonnet, Claude 3.5 Sonnet, Haiku</p>
+            <div class="p-code-snippet">
+              <code>export ANTHROPIC_API_KEY="..."<br>ox chat -m claude-3-7-sonnet-20250219</code>
+            </div>
+          </div>
+
+          <div class="provider-card">
+            <div class="p-header">
+              <div class="p-logo p-openai">OpenAI</div>
+              <span class="p-status">First-Class</span>
+            </div>
+            <h4>OpenAI</h4>
+            <p class="p-models">GPT-4o, GPT-4o-mini, o1, o3-mini</p>
+            <div class="p-code-snippet">
+              <code>export OPENAI_API_KEY="..."<br>ox chat --provider openai -m gpt-4o</code>
+            </div>
+          </div>
+
+          <div class="provider-card">
+            <div class="p-header">
+              <div class="p-logo p-gemini">Gemini</div>
+              <span class="p-status">Supported</span>
+            </div>
+            <h4>Google Gemini</h4>
+            <p class="p-models">Gemini 2.0 Flash, Gemini 1.5 Pro</p>
+            <div class="p-code-snippet">
+              <code>export GEMINI_API_KEY="..."<br>ox chat --provider gemini</code>
+            </div>
+          </div>
+
+          <div class="provider-card">
+            <div class="p-header">
+              <div class="p-logo p-deepseek">DeepSeek</div>
+              <span class="p-status">Supported</span>
+            </div>
+            <h4>DeepSeek</h4>
+            <p class="p-models">DeepSeek-V3, DeepSeek-R1 (OpenAI compat)</p>
+            <div class="p-code-snippet">
+              <code>export DEEPSEEK_API_KEY="..."<br>ox chat --provider openai -m deepseek-chat</code>
+            </div>
+          </div>
+
+          <div class="provider-card">
+            <div class="p-header">
+              <div class="p-logo p-ollama">Ollama</div>
+              <span class="p-status">Offline & Local</span>
+            </div>
+            <h4>Ollama</h4>
+            <p class="p-models">Qwen 2.5 Coder, Llama 3.3, DeepSeek R1 local</p>
+            <div class="p-code-snippet">
+              <code># No API key required<br>ox chat --provider ollama -m qwen2.5-coder:14b</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD & RELEASES SECTION -->
+    <section class="section download-section" id="download">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Distribution & Artifacts</span>
+          <h2 class="section-title">Download Precompiled Binaries</h2>
+          <p class="section-desc">Standalone, optimized binaries with Link-Time Optimization (LTO) and zero external runtime dependencies.</p>
+        </div>
+
+        <div class="release-cards-grid">
+          <!-- Linux Card -->
+          <div class="release-card" id="cardLinux">
+            <div class="rc-header">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12.504 0c-3.13 0-5.41 2.37-5.41 5.56 0 1.25.35 2.45.96 3.44C5.114 9.94 3.004 12.68 3.004 16c0 4.42 3.58 8 8 8s8-3.58 8-8c0-3.32-2.11-6.06-5.05-6.99.61-.99.96-2.19.96-3.45C14.914 2.37 12.634 0 9.504 0h3zm-3 4.5a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm4 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>
+              <div>
+                <h4>Linux x86_64 / ARM64</h4>
+                <span class="rc-tag">glibc & musl static</span>
+              </div>
+            </div>
+            <div class="rc-body">
+              <p>Supports Ubuntu, Debian, Fedora, Arch, Alpine, and RHEL.</p>
+              <div class="rc-links">
+                <a href="https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-gnu.tar.gz" class="btn btn-sm btn-outline">x86_64 (.tar.gz)</a>
+                <a href="https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-unknown-linux-musl.tar.gz" class="btn btn-sm btn-outline">musl static (.tar.gz)</a>
+                <a href="https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-aarch64-unknown-linux-gnu.tar.gz" class="btn btn-sm btn-outline">aarch64 ARM (.tar.gz)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- macOS Card -->
+          <div class="release-card" id="cardMac">
+            <div class="rc-header">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.85c.66-.8 1.11-1.92.99-3.04-.96.04-2.12.64-2.8 1.44-.6.69-1.12 1.83-.98 2.92 1.07.08 2.13-.52 2.79-1.32z"/></svg>
+              <div>
+                <h4>macOS Apple Silicon & Intel</h4>
+                <span class="rc-tag">Native Universal</span>
+              </div>
+            </div>
+            <div class="rc-body">
+              <p>Supports macOS 12+ (Monterey, Ventura, Sonoma, Sequoia).</p>
+              <div class="rc-links">
+                <a href="https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-aarch64-apple-darwin.tar.gz" class="btn btn-sm btn-outline">Apple Silicon M1/M2/M3/M4</a>
+                <a href="https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-apple-darwin.tar.gz" class="btn btn-sm btn-outline">Intel x86_64 (.tar.gz)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Windows Card -->
+          <div class="release-card" id="cardWin">
+            <div class="rc-header">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+              <div>
+                <h4>Windows x64</h4>
+                <span class="rc-tag">Standalone .exe</span>
+              </div>
+            </div>
+            <div class="rc-body">
+              <p>Supports Windows 10, Windows 11, and Windows Server.</p>
+              <div class="rc-links">
+                <a href="https://github.com/yak-herd/ox-orchestrator/releases/latest/download/ox-x86_64-pc-windows-msvc.zip" class="btn btn-sm btn-outline">Windows x64 (.zip / .exe)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cargo Install -->
+          <div class="release-card" id="cardCargo">
+            <div class="rc-header">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+              <div>
+                <h4>Build via Cargo</h4>
+                <span class="rc-tag">Source Distribution</span>
+              </div>
+            </div>
+            <div class="rc-body">
+              <p>Compile the latest version directly with your local Rust toolchain.</p>
+              <div class="rc-command-box">
+                <code>cargo install --git https://github.com/yak-herd/ox-orchestrator ox-cli</code>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SEARCH MODAL OVERLAY -->
+  <div class="search-modal-backdrop" id="searchModal">
+    <div class="search-modal-box">
+      <div class="search-modal-input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="globalSearchInput" placeholder="Search guides, tutorials, CLI flags, security model..." oninput="handleGlobalSearch()">
+        <button class="search-close-btn" onclick="closeSearchModal()">Esc</button>
+      </div>
+      <div class="search-results-list" id="searchResultsList">
+        <!-- Results injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">Copied to clipboard!</div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="brand-logo">
+          <div class="logo-box"><span class="logo-text">ox</span></div>
+          <span class="brand-name">ox-orchestrator</span>
+        </div>
+        <p class="footer-desc">A high-performance, minimalist, and secure AI coding agent harness built in Rust.</p>
+        <p class="footer-copy">© 2026 Johnny Orellana & ox-orchestrator contributors. Licensed under Apache 2.0.</p>
+      </div>
+      <div class="footer-links-group">
+        <div class="footer-col">
+          <h5>Diátaxis Documentation</h5>
+          <a href="#diataxis" onclick="openDiataxisDoc('tutorials/01_getting_started.md')">Tutorials</a>
+          <a href="#diataxis" onclick="openDiataxisDoc('how_to/configuring_providers.md')">How-To Guides</a>
+          <a href="#diataxis" onclick="openDiataxisDoc('reference/cli_reference.md')">CLI Reference</a>
+          <a href="#diataxis" onclick="openDiataxisDoc('explanation/architecture_overview.md')">Architecture Overview</a>
+        </div>
+        <div class="footer-col">
+          <h5>Community & Code</h5>
+          <a href="https://github.com/yak-herd/ox-orchestrator" target="_blank" rel="noopener">GitHub Repository</a>
+          <a href="https://github.com/yak-herd/ox-orchestrator/releases" target="_blank" rel="noopener">Releases & Binaries</a>
+          <a href="https://github.com/yak-herd/ox-orchestrator/blob/main/SECURITY.md" target="_blank" rel="noopener">Security Policy</a>
+          <a href="https://github.com/yak-herd/ox-orchestrator/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contributing</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

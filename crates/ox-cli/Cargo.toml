@@ -6,6 +6,11 @@ license.workspace = true
 authors.workspace = true
 description = "Fast, secure, minimalist CLI and terminal harness for AI coding agents."
 
+[[bin]]
+name = "ox"
+path = "src/main.rs"
+
+
 [dependencies]
 ox-core.workspace = true
 ox-security.workspace = true
