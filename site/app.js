@@ -989,12 +989,12 @@ function autoDetectPlatform() {
 function highlightReleaseCard(cardId) {
   const card = document.getElementById(cardId);
   if (card) {
-    card.style.borderColor = "var(--accent-rust)";
-    card.style.boxShadow = "0 8px 30px var(--accent-rust-glow)";
+    card.style.borderColor = "var(--c-leaf)";
+    card.style.boxShadow = "0 8px 30px rgba(143, 203, 155, 0.2)";
   }
 }
 
-// Terminal Simulated Typewriter
+// Terminal Simulated Typewriter with Interactive DAG Checkpoints
 let termStepIdx = 0;
 let termTimeout = null;
 
@@ -1003,6 +1003,7 @@ function startTerminalDemo() {
   if (!body) return;
   body.innerHTML = "";
   termStepIdx = 0;
+  updateDagActivePill(2);
   playNextTerminalStep();
 }
 
@@ -1011,9 +1012,50 @@ function restartTerminalDemo() {
   startTerminalDemo();
 }
 
-function playNextTerminalStep() {
-  if (termStepIdx >= TERMINAL_STEPS.length) return;
-  const step = TERMINAL_STEPS[termStepIdx];
+function updateDagActivePill(stepIndex) {
+  const track = document.getElementById("dagNodesTrack");
+  if (!track) return;
+  const pills = track.querySelectorAll(".dag-node-pill");
+  pills.forEach((p, idx) => {
+    if (idx === stepIndex) {
+      p.classList.add("active");
+    } else {
+      p.classList.remove("active");
+    }
+  });
+}
+
+function jumpToDagCheckpoint(stepIndex) {
+  if (termTimeout) clearTimeout(termTimeout);
+  const body = document.getElementById("terminalBody");
+  if (!body) return;
+  body.innerHTML = "";
+  updateDagActivePill(stepIndex);
+
+  if (stepIndex === 0) {
+    // Root checkpoint
+    appendTerminalLine({ type: "prompt", text: "ox chat --model claude-3-7-sonnet-20250219" });
+    appendTerminalLine({ type: "banner", text: "   ____  _  __\n  / __ \\| |/ /   ox-orchestrator v0.1.0\n / /_/ /|   /    Minimalist & Secure AI Agent Harness\n \\____//_/|_\\    \n\n Provider  : Anthropic (claude-3-7-sonnet-20250219)\n Workspace : /home/user/project\n Session   : session-a1b2c3d4 (checkpoint: root)\n Security  : Path-Jailed, Env-Scrubbed, Zeroized" });
+  } else if (stepIndex === 1) {
+    // Turn 1: Workspace scan
+    appendTerminalLine({ type: "prompt", text: "ox chat --model claude-3-7-sonnet-20250219" });
+    appendTerminalLine({ type: "user", text: "Find all Rust source files and audit them for unsafe blocks." });
+    appendTerminalLine({ type: "tool", text: "[TOOL] find_files({\"pattern\": \"*.rs\"}) -> 12 files discovered." });
+    appendTerminalLine({ type: "tool", text: "[TOOL] grep_search({\"query\": \"unsafe {\"}) -> 0 unsafe blocks found." });
+    appendTerminalLine({ type: "ai", text: "All 12 Rust files were audited. The codebase is 100% safe Rust with zero `unsafe` blocks." });
+  } else if (stepIndex === 2) {
+    // Active Branch: Jailed tool execution
+    TERMINAL_STEPS.forEach(step => appendTerminalLine(step));
+  } else if (stepIndex === 3) {
+    // Alt branch (/undo checkpoint)
+    appendTerminalLine({ type: "prompt", text: "ox > /undo 1" });
+    appendTerminalLine({ type: "success", text: "[DAG] Rewound session HEAD to checkpoint 01:scan. Alternative branch 02b active." });
+    appendTerminalLine({ type: "user", text: "ox > /tree" });
+    appendTerminalLine({ type: "banner", text: "● 00:root (init)\n└── ● 01:scan (audit safe)\n    ├── ● 02:jailed-exec (write src/cache.rs)\n    └── ◉ 02b:alt (HEAD -> current branch)" });
+  }
+}
+
+function appendTerminalLine(step) {
   const body = document.getElementById("terminalBody");
   if (!body) return;
 
@@ -1023,7 +1065,7 @@ function playNextTerminalStep() {
   if (step.type === "prompt") {
     lineEl.innerHTML = `<span class="term-prompt">$ </span><span class="term-user-text">${step.text}</span>`;
   } else if (step.type === "banner") {
-    lineEl.innerHTML = `<pre style="color: #58a6ff; font-size: 0.76rem; line-height: 1.2; margin: 4px 0;">${step.text}</pre>`;
+    lineEl.innerHTML = `<pre class="term-banner">${step.text}</pre>`;
   } else if (step.type === "user") {
     lineEl.innerHTML = `<span class="term-prompt">user &gt; </span><span class="term-user-text">${step.text}</span>`;
   } else if (step.type === "tool") {
@@ -1038,6 +1080,12 @@ function playNextTerminalStep() {
 
   body.appendChild(lineEl);
   body.scrollTop = body.scrollHeight;
+}
+
+function playNextTerminalStep() {
+  if (termStepIdx >= TERMINAL_STEPS.length) return;
+  const step = TERMINAL_STEPS[termStepIdx];
+  appendTerminalLine(step);
 
   termStepIdx++;
   const delay = step.type === "banner" ? 500 : step.type === "security" ? 1400 : 900;
