@@ -9,7 +9,7 @@ Complete reference for all `ox` command line arguments, flags, and interactive s
 | Flag | Long Form | Description | Default |
 |---|---|---|---|
 | `-m` | `--model <NAME>` | Model identifier (e.g. `claude-3-7-sonnet-20250219`, `gpt-4o`) | Inferred from provider or config |
-| `-p` | `--provider <NAME>` | Provider family: `anthropic`, `openai`, `gemini`, `ollama`, `custom` | `anthropic` |
+| `-p` | `--provider <NAME>` | Provider family: `anthropic`, `openai`, `gemini`, `ollama`, `custom` | Inferred from config or wizard |
 | `-w` | `--workspace <PATH>` | Target workspace root directory | Current directory or `.git` parent |
 | | `--base-url <URL>` | Custom API base URL | Standard provider endpoint |
 | `-y` | `--auto-approve` | Automatically approve mutating tools | `false` |
@@ -20,6 +20,11 @@ Complete reference for all `ox` command line arguments, flags, and interactive s
 ---
 
 ## Subcommands
+
+### 0. `ox setup`
+Runs the interactive first-run configuration wizard. Prompts for provider, model, and API key (hidden input). Writes or merges config into `~/.config/ox/config.toml` or `./ox.toml`.
+
+When run on an existing config, offers a shortcut to add or rotate a key for a specific provider without re-confirming your model selection.
 
 ### 1. `ox chat`
 Starts interactive REPL session with DAG branching history.

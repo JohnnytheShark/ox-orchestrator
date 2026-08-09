@@ -32,23 +32,23 @@ ox --help
 
 ---
 
-## Step 2: Setting up Credentials
+## Step 2: Configure Your Provider
 
-`ox` automatically reads credentials from standard environment variables:
+Run the interactive setup wizard to configure your provider, model, and API key:
 
 ```bash
-# For Anthropic Claude (Default)
-export ANTHROPIC_API_KEY="sk-ant-..."
-
-# For OpenAI
-export OPENAI_API_KEY="sk-..."
-
-# For Google Gemini
-export GEMINI_API_KEY="..."
-
-# For DeepSeek
-export DEEPSEEK_API_KEY="sk-..."
+ox setup
 ```
+
+The wizard will guide you through:
+1. Choosing your LLM provider (Anthropic, OpenAI, Gemini, or local Ollama)
+2. Selecting a model (sensible defaults suggested per provider)
+3. Entering your API key with **hidden input** (key is never echoed to the terminal)
+4. Saving to a global config (`~/.config/ox/config.toml`) or a local `ox.toml`
+
+> **Prefer env vars?** You can skip the wizard by setting `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or `GEMINI_API_KEY` before running `ox`. The wizard reads these automatically.
+
+> **Re-run anytime:** `ox setup` on an existing config offers a credentials-only shortcut — rotate a key for one provider without re-confirming your model.
 
 ---
 
@@ -58,7 +58,7 @@ Navigate to any codebase directory and start `ox`:
 
 ```bash
 cd /path/to/your/project
-ox chat
+ox
 ```
 
 You will be greeted by the `ox` banner showing your active provider, workspace path, and session ID:

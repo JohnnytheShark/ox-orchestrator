@@ -16,6 +16,29 @@ This guide shows how to configure and switch between different LLM providers in 
 
 ---
 
+## 0. Using the Setup Wizard (Recommended)
+
+The easiest way to configure a provider is the interactive setup wizard:
+
+```bash
+ox setup
+```
+
+The wizard saves your choice to `~/.config/ox/config.toml` under `[agent]` and stores the API key under `[credentials]`:
+
+```toml
+[agent]
+provider = "anthropic"
+model    = "claude-3-7-sonnet-20250219"
+
+[credentials]
+anthropic_api_key = "sk-ant-..."
+```
+
+Running `ox setup` a second time to add a new provider's key **merges** — your existing keys are preserved.
+
+---
+
 ## 1. Using CLI Flags
 
 Pass `--provider` and `--model` directly to `ox`:
@@ -35,14 +58,16 @@ ox chat --provider ollama --model qwen2.5-coder:14b
 
 ## 2. Using Workspace Configuration
 
-To persist default model choices for a project, define them in `.ox/config.json`:
+To persist default model choices for a project, define them in `ox.toml`:
 
-```json
-{
-  "default_provider": "openai",
-  "default_model": "gpt-4o",
-  "base_url": "https://api.openai.com/v1"
-}
+```toml
+[agent]
+provider = "openai"
+model    = "gpt-4o"
+base_url = "https://api.openai.com/v1"
+
+[credentials]
+openai_api_key = "sk-..."
 ```
 
 When you launch `ox chat` in that directory, it will automatically load these defaults.

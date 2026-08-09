@@ -14,6 +14,42 @@ pub enum ProviderType {
 }
 
 impl ProviderType {
+    /// Parses a provider name string (e.g. `"anthropic"`, `"openai"`) into a `ProviderType`.
+    /// Unknown strings fall back to `Custom`.
+    pub fn from_str_name(s: &str) -> Self {
+        match s.to_lowercase().as_str() {
+            "anthropic" => ProviderType::Anthropic,
+            "openai" => ProviderType::OpenAi,
+            "gemini" => ProviderType::Gemini,
+            "ollama" => ProviderType::Ollama,
+            _ => ProviderType::Custom,
+        }
+    }
+
+    /// Returns the canonical lowercase config-file name for this provider.
+    pub fn to_str_name(self) -> &'static str {
+        match self {
+            ProviderType::Anthropic => "anthropic",
+            ProviderType::OpenAi => "openai",
+            ProviderType::Gemini => "gemini",
+            ProviderType::Ollama => "ollama",
+            ProviderType::Custom => "custom",
+        }
+    }
+
+    /// Returns the recommended default model for this provider.
+    ///
+    /// Centralised here so that model suggestions can be updated in one place
+    /// (this crate) without touching the CLI wizard or any other consumer.
+    pub fn default_model(self) -> &'static str {
+        match self {
+            ProviderType::Anthropic => "claude-3-7-sonnet-20250219",
+            ProviderType::OpenAi | ProviderType::Custom => "gpt-4o",
+            ProviderType::Gemini => "gemini-2.0-flash",
+            ProviderType::Ollama => "llama3",
+        }
+    }
+
     /// Infers provider type from model name string (e.g. `claude-3-7-sonnet` -> Anthropic, `gpt-4o` -> OpenAi).
     pub fn infer_from_model_name(model: &str) -> Self {
         let lower = model.to_lowercase();

@@ -64,6 +64,10 @@ pub enum Commands {
 
     /// Inspect all registered built-in and MCP tools.
     Tools,
+
+    /// Run the interactive setup wizard to configure a provider, model, and API key.
+    /// Useful for first-time setup or adding credentials for a new provider.
+    Setup,
 }
 
 #[derive(Subcommand, Debug)]

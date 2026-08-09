@@ -6,6 +6,7 @@ mod tui;
 use clap::Parser;
 use cli_args::{Cli, Commands};
 use config::ConfigResolver;
+use ox_providers::ProviderType;
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
@@ -30,6 +31,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let auto_approve = cli.auto_approve || config_file.get_auto_approve().unwrap_or(false);
     let default_max_turns = config_file.get_max_turns().unwrap_or(25);
+
+    // First-run detection: trigger the setup wizard when the user hasn't configured
+    // anything yet (no CLI model flag, no config file model, and no API key resolved).
+    // Ollama is excluded because it doesn't need a key.
+    let has_existing_config = config_file.get_model().is_some()
+        || config_file.get_provider().is_some();
+
+    let is_first_run = cli.model.is_none()
+        && !has_existing_config
+        && provider_config.get_api_key().is_none()
+        && provider_config.provider_type != ProviderType::Ollama
+        && !matches!(cli.command, Some(Commands::Setup));
+
+    let provider_config = if is_first_run {
+        commands::run_setup_wizard(false).await?
+    } else {
+        provider_config
+    };
 
     match cli.command {
         Some(Commands::Chat { session, prompt }) => {
@@ -59,6 +78,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         Some(Commands::Tools) => {
             commands::handle_tools_command();
+        }
+        Some(Commands::Setup) => {
+            // Explicit `ox setup` — always run the wizard.
+            // Pass has_existing_config=true so the user gets the key-rotation shortcut.
+            commands::run_setup_wizard(has_existing_config).await?;
         }
         None => {
             // Default to starting interactive chat REPL

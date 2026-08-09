@@ -257,6 +257,14 @@
             <h3>Zero-Memory Secret Zeroization</h3>
             <p>Sensitive credentials in memory implement Rust's <code>zeroize::Zeroize</code> trait, clearing sensitive key bytes with compiler memory fences when dropped.</p>
           </div>
+
+          <div class="feature-card">
+            <div class="feat-icon feat-icon-rust">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </div>
+            <h3>Interactive Setup Wizard</h3>
+            <p>First-run <code>ox setup</code> guides you through provider selection, model choice, and masked API key entry in under 60 seconds. Keys are stored per-provider in <code>[credentials]</code> — rotate one without losing others.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -313,7 +321,7 @@
             <p class="q-desc">Authoritative, comprehensive technical facts, CLI specs, configuration schemas, and security contracts.</p>
             <ul class="q-links">
               <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/cli_reference.md'); event.stopPropagation();">→ CLI Flags & Slash Commands</a></li>
-              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/configuration_schema.md'); event.stopPropagation();">→ Configuration Schema (.ox/config.json)</a></li>
+              <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/configuration_schema.md'); event.stopPropagation();">→ Configuration Schema (ox.toml / [credentials])</a></li>
               <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/crate_architecture.md'); event.stopPropagation();">→ Crate Architecture & APIs</a></li>
               <li><a href="#diataxis-viewer" onclick="openDiataxisDoc('reference/security_model.md'); event.stopPropagation();">→ Security Model Guarantees</a></li>
             </ul>
@@ -391,7 +399,7 @@
             <h4>Anthropic</h4>
             <p class="p-models">Claude 3.7 Sonnet, Claude 3.5 Sonnet, Haiku</p>
             <div class="p-code-snippet">
-              <code>export ANTHROPIC_API_KEY="..."<br>ox chat -m claude-3-7-sonnet-20250219</code>
+              <code>ox setup  # guided first-run wizard<br># or: export ANTHROPIC_API_KEY="..."<br>ox</code>
             </div>
           </div>
 

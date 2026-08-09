@@ -43,23 +43,23 @@ ox --help
 
 ---
 
-## Step 2: Setting up Credentials
+## Step 2: Configure Your Provider
 
-\`ox\` automatically reads credentials from standard environment variables:
+Run the interactive setup wizard to configure your provider, model, and API key:
 
 \`\`\`bash
-# For Anthropic Claude (Default)
-export ANTHROPIC_API_KEY="sk-ant-..."
-
-# For OpenAI
-export OPENAI_API_KEY="sk-..."
-
-# For Google Gemini
-export GEMINI_API_KEY="..."
-
-# For DeepSeek
-export DEEPSEEK_API_KEY="sk-..."
+ox setup
 \`\`\`
+
+The wizard will guide you through:
+1. Choosing your LLM provider (Anthropic, OpenAI, Gemini, or local Ollama)
+2. Selecting a model (sensible defaults suggested per provider)
+3. Entering your API key with **hidden input** (key is never echoed to the terminal)
+4. Saving to a global config (\`~/.config/ox/config.toml\`) or a local \`ox.toml\`
+
+> **Prefer env vars?** You can skip the wizard by setting \`ANTHROPIC_API_KEY\`, \`OPENAI_API_KEY\`, or \`GEMINI_API_KEY\` before running \`ox\`. The wizard reads these automatically.
+
+> **Re-run anytime:** \`ox setup\` on an existing config offers a credentials-only shortcut — rotate a key for one provider without re-confirming your model.
 
 ---
 
@@ -69,7 +69,7 @@ Navigate to any codebase directory and start \`ox\`:
 
 \`\`\`bash
 cd /path/to/your/project
-ox chat
+ox
 \`\`\`
 
 You will be greeted by the \`ox\` banner showing your active provider, workspace path, and session ID:
@@ -224,19 +224,42 @@ This guide shows how to configure and switch between different LLM providers in 
 
 | Provider | Provider Flag | Default Model | Environment Variable |
 |---|---|---|---|
-| **Anthropic** | \`--provider anthropic\` | \`claude-3-7-sonnet-20250219\` | \`ANTHROPIC_API_KEY\` |
-| **OpenAI** | \`--provider openai\` | \`gpt-4o\` | \`OPENAI_API_KEY\` |
-| **Google Gemini** | \`--provider gemini\` | \`gemini-2.0-flash\` | \`GEMINI_API_KEY\` |
-| **DeepSeek** | \`--provider openai\` | \`deepseek-chat\` | \`DEEPSEEK_API_KEY\` |
-| **Ollama (Local)** | \`--provider ollama\` | \`llama3.3\` | None (Local) |
+| **Anthropic** | `--provider anthropic` | `claude-3-7-sonnet-20250219` | `ANTHROPIC_API_KEY` |
+| **OpenAI** | `--provider openai` | `gpt-4o` | `OPENAI_API_KEY` |
+| **Google Gemini** | `--provider gemini` | `gemini-2.0-flash` | `GEMINI_API_KEY` |
+| **DeepSeek** | `--provider openai` | `deepseek-chat` | `DEEPSEEK_API_KEY` |
+| **Ollama (Local)** | `--provider ollama` | `llama3.3` | None (Local) |
+
+---
+
+## 0. Using the Setup Wizard (Recommended)
+
+The easiest way to configure a provider is the interactive setup wizard:
+
+```bash
+ox setup
+```
+
+The wizard saves your choice to `~/.config/ox/config.toml` under `[agent]` and stores the API key under `[credentials]`:
+
+```toml
+[agent]
+provider = "anthropic"
+model    = "claude-3-7-sonnet-20250219"
+
+[credentials]
+anthropic_api_key = "sk-ant-..."
+```
+
+Running `ox setup` a second time to add a new provider's key **merges** — your existing keys are preserved.
 
 ---
 
 ## 1. Using CLI Flags
 
-Pass \`--provider\` and \`--model\` directly to \`ox\`:
+Pass `--provider` and `--model` directly to `ox`:
 
-\`\`\`bash
+```bash
 # Use OpenAI GPT-4o
 ox chat --provider openai --model gpt-4o
 
@@ -245,21 +268,25 @@ ox chat --provider openai --model deepseek-chat --base-url https://api.deepseek.
 
 # Use Local Ollama
 ox chat --provider ollama --model qwen2.5-coder:14b
-\`\`\`
+```
 
 ---
 
 ## 2. Using Workspace Configuration
 
-To persist default model choices for a project, define them in \`.ox/config.json\`:
+To persist default model choices for a project, define them in `ox.toml`:
 
-\`\`\`json
-{
-  "default_provider": "openai",
-  "default_model": "gpt-4o",
-  "base_url": "https://api.openai.com/v1"
-}
-\`\`\`
+```toml
+[agent]
+provider = "openai"
+model    = "gpt-4o"
+base_url = "https://api.openai.com/v1"
+
+[credentials]
+openai_api_key = "sk-..."
+```
+
+When you launch `ox chat` in that directory, it will automatically load these defaults.
 `
   },
 
@@ -425,7 +452,7 @@ Complete reference for all \`ox\` command line arguments, flags, and interactive
 | Flag | Long Form | Description | Default |
 |---|---|---|---|
 | \`-m\` | \`--model <NAME>\` | Model identifier (e.g. \`claude-3-7-sonnet-20250219\`, \`gpt-4o\`) | Inferred from provider or config |
-| \`-p\` | \`--provider <NAME>\` | Provider family: \`anthropic\`, \`openai\`, \`gemini\`, \`ollama\`, \`custom\` | \`anthropic\` |
+| \`-p\` | \`--provider <NAME>\` | Provider family: \`anthropic\`, \`openai\`, \`gemini\`, \`ollama\`, \`custom\` | Inferred from config or wizard |
 | \`-w\` | \`--workspace <PATH>\` | Target workspace root directory | Current directory or \`.git\` parent |
 | | \`--base-url <URL>\` | Custom API base URL | Standard provider endpoint |
 | \`-y\` | \`--auto-approve\` | Automatically approve mutating tools | \`false\` |
@@ -436,6 +463,11 @@ Complete reference for all \`ox\` command line arguments, flags, and interactive
 ---
 
 ## Subcommands
+
+### 0. \`ox setup\`
+Runs the interactive first-run configuration wizard. Prompts for provider, model, and API key (hidden input). Writes or merges config into \`~/.config/ox/config.toml\` or \`./ox.toml\`.
+
+When run on an existing config, offers a shortcut to add or rotate a key for a specific provider without re-confirming your model selection.
 
 ### 1. \`ox chat\`
 Starts interactive REPL session with DAG branching history.
@@ -475,41 +507,92 @@ Lists all registered built-in tools and connected MCP tools with descriptions an
   },
 
   "reference/configuration_schema.md": {
-    title: "Configuration Schema (.ox/config.json)",
+    title: "Configuration Schema (ox.toml / [credentials])",
     category: "Reference",
     badge: "📖 INFORMATION-ORIENTED",
-    content: `# Reference: Configuration Schema
+    content: `# Reference: Configuration Schema & Workspace Rules
 
-The \`.ox/config.json\` file stores workspace-level defaults and external Model Context Protocol (MCP) server definitions.
+\`ox-orchestrator\` supports declarative configuration via TOML files, automatic repository instruction file injection, and file masking via \`.oxignore\`.
 
 ---
 
-## Full Schema Example
+## 1. Hierarchical Configuration (\`ox.toml\`)
 
-\`\`\`json
-{
-  "$schema": "https://raw.githubusercontent.com/JohnnytheShark/ox-orchestrator/main/schema.json",
-  "default_provider": "anthropic",
-  "default_model": "claude-3-7-sonnet-20250219",
-  "base_url": "https://api.anthropic.com/v1",
-  "auto_approve": false,
-  "max_tokens": 8192,
-  "temperature": 0.2,
-  "context_compaction_threshold": 120000,
-  "mcp_servers": {
-    "sqlite": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite", "--db-path", "app.db"],
-      "env": {
-        "SQLITE_READ_ONLY": "0"
-      }
-    },
-    "git": {
-      "command": "mcp-server-git",
-      "args": ["--repository", "."]
-    }
-  }
-}
+Configurations are merged hierarchically with the following precedence order (highest to lowest):
+1. **CLI Flags** (e.g. \`--provider anthropic --model claude-3-7-sonnet\`)
+2. **Workspace Configuration** (\`./ox.toml\`)
+3. **Global User Configuration** (\`~/.config/ox/config.toml\`)
+4. **Provider defaults (via** \`ox setup\`**)**
+
+### Example \`ox.toml\`
+
+\`\`\`toml
+[agent]
+provider     = "anthropic"
+model        = "claude-3-7-sonnet-20250219"
+base_url     = "https://api.anthropic.com/v1"
+auto_approve = false
+max_turns    = 40
+max_context_tokens = 200000
+
+[credentials]
+anthropic_api_key = "sk-ant-..."
+# openai_api_key  = "sk-..."   # add other providers as needed
+# gemini_api_key  = "AIza..."
+
+[mcp_servers.filesystem]
+command = "npx"
+args    = ["-y", "@modelcontextprotocol/server-filesystem", "./data"]
+env     = { DEBUG = "1" }
+
+[mcp_servers.memory]
+command = "npx"
+args    = ["-y", "@modelcontextprotocol/server-memory"]
+\`\`\`
+
+### Configuration Fields
+
+| Section | Field | Type | Description |
+|---|---|---|---|
+| \`[agent]\` | \`provider\` | String | Provider identifier (\`anthropic\`, \`openai\`, \`gemini\`, \`ollama\`, \`custom\`) |
+| \`[agent]\` | \`model\` | String | LLM model identifier |
+| \`[agent]\` | \`base_url\` | String (Optional) | Custom base URL for self-hosted or proxy endpoints |
+| \`[agent]\` | \`auto_approve\` | Boolean | Whether to skip HITL prompts for mutating tools (default \`false\`) |
+| \`[agent]\` | \`max_turns\` | Integer | Max reasoning loop turns per session (default \`30\`) |
+| \`[agent]\` | \`max_context_tokens\` | Integer | Token budget cap for compaction triggers (default \`128000\`) |
+| \`[credentials]\` | \`anthropic_api_key\` | String (Optional) | Anthropic API key (written by \`ox setup\`, takes lower priority than \`ANTHROPIC_API_KEY\` env var) |
+| \`[credentials]\` | \`openai_api_key\` | String (Optional) | OpenAI API key |
+| \`[credentials]\` | \`gemini_api_key\` | String (Optional) | Google Gemini API key |
+| \`[mcp_servers.<name>]\` | \`command\` | String | Executable command to launch (e.g. \`npx\`, \`python\`, \`cargo\`) |
+| \`[mcp_servers.<name>]\` | \`args\` | Array of Strings | Command-line arguments passed to the MCP server process |
+| \`[mcp_servers.<name>]\` | \`env\` | Table of Key/Values | Custom environment variables passed to the child process |
+
+---
+
+## 2. Repository Instruction Files (\`AGENTS.md\` / \`OX.md\`)
+
+When starting any agent session, \`ox-orchestrator\` automatically searches the workspace hierarchy for project instruction files:
+1. \`AGENTS.md\` in workspace root or subdirectories
+2. \`OX.md\` in workspace root or subdirectories
+3. \`.agents.md\` / \`.ox.md\` (hidden variant)
+
+If discovered, instructions are automatically appended to the system prompt inside a dedicated \`<repository_instructions>\` XML block.
+
+---
+
+## 3. File Masking (\`.oxignore\`)
+
+\`ox-orchestrator\` enforces workspace boundaries and shields sensitive files from being indexed, read, or modified by LLM agents.
+
+### Precedence & Sources
+1. Standard \`.git/\`, \`target/\`, \`node_modules/\` are excluded by default.
+2. Standard \`.gitignore\` rules in the workspace are respected.
+3. Custom \`.oxignore\` files in the workspace root define additional agent-specific masks.
+
+### Affected Tools
+- \`find_files\`: Excluded files/folders are not returned in listings.
+- \`grep_search\`: Excluded files/folders are bypassed during search scans.
+- \`read_file\`, \`edit_file\`, \`write_file\`: Refuse access with a safe error message indicating the target is ignored.
 \`\`\`
 `
   },

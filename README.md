@@ -31,6 +31,7 @@ cargo install --git https://github.com/JohnnytheShark/ox-orchestrator ox-cli
 
 ## Highlights
 
+* **Interactive Setup Wizard (`ox setup`)**: Guided first-run configuration — choose your provider, enter your API key (hidden input), and have everything written to a config file in under 60 seconds. Supports key rotation for multiple providers without re-entering your model preferences.
 * **Single Standalone Executable**: Native machine binary (~5MB) with zero Node.js/Python dependencies.
 * **Kernel-Level Sandboxing (`PathJail`)**: Zero-overhead canonicalization protecting against directory traversal, path escaping, and symlink exploits.
 * **Subprocess Environment Scrubbing (`EnvScrubber`)**: Automatically scrubs API keys (`*_API_KEY`, `*TOKEN*`, `*SECRET*`) from subprocesses and MCP child servers.
@@ -60,21 +61,31 @@ Official standalone binaries with Link-Time Optimization (LTO):
 
 ---
 
-## Quick Start
+## Getting Started
 
-### 1. Set Your API Key
+### 1. Run the Setup Wizard
+
+After installing, run `ox setup` to configure your provider, model, and API key interactively. Your settings are saved to `~/.config/ox/config.toml` (or locally as `ox.toml`) and credentials are stored in a `[credentials]` section — the same pattern used by the GitHub CLI and AWS CLI.
 
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-..."
-# or
-export OPENAI_API_KEY="sk-..."
+ox setup
 ```
 
-### 2. Start Interactive Chat
+The wizard will:
+- Let you choose your provider (Anthropic, OpenAI, Gemini, or local Ollama)
+- Suggest a sensible default model for that provider
+- Prompt for your API key with hidden input (input is never echoed to the terminal)
+- Write everything to a config file so you never need to set env vars manually
+
+> **Already configured?** Running `ox setup` again gives you a shortcut to add or rotate an API key for a different provider without re-confirming your current model.
+
+> **Prefer env vars?** You can skip the wizard entirely by setting `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or `GEMINI_API_KEY` before running `ox`.
+
+### 2. Start an Interactive Session
 
 ```bash
 cd /path/to/your/project
-ox chat
+ox
 ```
 
 ### 3. Non-Interactive CI/CD Run
@@ -84,6 +95,22 @@ ox run "Review all changed files, run cargo check, and fix compiler warnings." -
 ```
 
 ---
+
+## CLI Commands
+
+| Command | Description |
+|---|---|
+| `ox` | Start an interactive chat REPL (default) |
+| `ox setup` | Run the interactive setup wizard — configure provider, model, and API key |
+| `ox chat` | Start an interactive chat session (optionally resume with `--session <id>`) |
+| `ox run "<prompt>"` | Run a single prompt in non-interactive batch mode and exit |
+| `ox session list` | List all saved sessions in the workspace |
+| `ox session tree <id>` | Display the branching DAG of a session |
+| `ox session export <id>` | Export a session to Markdown or JSON |
+| `ox tools` | Inspect all registered built-in and MCP tools |
+
+**Global flags:** `--model`, `--provider`, `--base-url`, `--workspace`, `-y` (auto-approve), `--verbose`
+
 
 ## Architecture Overview
 
