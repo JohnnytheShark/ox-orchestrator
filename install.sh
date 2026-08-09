@@ -59,8 +59,8 @@ echo "[+] Fetching latest release info from GitHub..."
 TAG=$(curl -sSL -H "Accept: application/vnd.github.v3+json" "${GITHUB_API}" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 
 if [ -z "${TAG}" ]; then
-  echo "[!] Could not fetch latest release via API, defaulting to v0.1.0"
-  TAG="v0.1.0"
+  echo "[!] Could not fetch latest release via API, defaulting to v0.2.0"
+  TAG="v0.2.0"
 fi
 
 ARCHIVE_NAME="ox-${TAG}-${TARGET}"
