@@ -35,8 +35,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // First-run detection: trigger the setup wizard when the user hasn't configured
     // anything yet (no CLI model flag, no config file model, and no API key resolved).
     // Ollama is excluded because it doesn't need a key.
-    let has_existing_config = config_file.get_model().is_some()
-        || config_file.get_provider().is_some();
+    let has_existing_config =
+        config_file.get_model().is_some() || config_file.get_provider().is_some();
 
     let is_first_run = cli.model.is_none()
         && !has_existing_config

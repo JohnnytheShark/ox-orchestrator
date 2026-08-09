@@ -34,9 +34,7 @@ pub enum SetupError {
 /// - `has_existing_config`: `true` when an existing config was found (i.e. this is
 ///   `ox setup` run explicitly). In that case the user is offered a "credentials only"
 ///   shortcut to avoid re-confirming their model on every key rotation.
-pub async fn run_setup_wizard(
-    has_existing_config: bool,
-) -> Result<ProviderConfig, SetupError> {
+pub async fn run_setup_wizard(has_existing_config: bool) -> Result<ProviderConfig, SetupError> {
     print_wizard_banner();
 
     // P2[S] — key-rotation UX: when re-running setup on an existing config, let the
@@ -172,7 +170,10 @@ fn prompt_key_rotation_header() -> (ProviderType, String) {
         // For credentials-only, we don't touch agent.model; pass default as placeholder
         return (provider, provider.default_model().to_string());
     }
-    (ProviderType::Anthropic, ProviderType::Anthropic.default_model().to_string())
+    (
+        ProviderType::Anthropic,
+        ProviderType::Anthropic.default_model().to_string(),
+    )
 }
 
 fn prompt_provider() -> Result<ProviderType, SetupError> {
@@ -235,7 +236,10 @@ fn prompt_api_key(provider: &ProviderType) -> Result<String, SetupError> {
     print_section_header("API key");
     let _ = execute!(stdout, SetForegroundColor(Color::DarkGrey));
     println!("  Stored in plain text in your config file (same as GitHub CLI / AWS CLI).");
-    println!("  You can also set the {} environment variable instead.", env_hint);
+    println!(
+        "  You can also set the {} environment variable instead.",
+        env_hint
+    );
     let _ = execute!(stdout, ResetColor);
     println!();
 

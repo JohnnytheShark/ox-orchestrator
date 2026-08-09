@@ -335,12 +335,7 @@ impl ConfigResolver {
         };
 
         // Update agent section
-        existing.agent.provider = Some(
-            inputs
-                .provider_type
-                .to_str_name()
-                .to_string(),
-        );
+        existing.agent.provider = Some(inputs.provider_type.to_str_name().to_string());
         existing.agent.model = Some(inputs.model.clone());
 
         // Merge credential — only write the key for the chosen provider; keep others intact
@@ -352,9 +347,7 @@ impl ConfigResolver {
                 ProviderType::OpenAi | ProviderType::Custom => {
                     existing.credentials.openai_api_key = Some(key.clone())
                 }
-                ProviderType::Gemini => {
-                    existing.credentials.gemini_api_key = Some(key.clone())
-                }
+                ProviderType::Gemini => existing.credentials.gemini_api_key = Some(key.clone()),
                 ProviderType::Ollama => {}
             }
         }
@@ -546,4 +539,3 @@ provider = "gemini"
         assert_eq!(result.agent.provider.as_deref(), Some("openai"));
     }
 }
-
