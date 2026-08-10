@@ -1,5 +1,0 @@
-error: unexpected argument 'is' found
-
-Usage: ox.exe run [OPTIONS] <PROMPT>
-
-For more information, try '--help'.
