@@ -1,7 +1,7 @@
 use futures_util::StreamExt;
 use ox_core::agent::StreamEvent;
 use ox_core::types::Message;
-use ox_providers::{create_provider, LlmProvider, ProviderConfig, ProviderType};
+use ox_providers::{create_provider, ProviderConfig, ProviderType};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 
