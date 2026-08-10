@@ -45,7 +45,7 @@ impl ProviderType {
         match self {
             ProviderType::Anthropic => "claude-3-7-sonnet-20250219",
             ProviderType::OpenAi | ProviderType::Custom => "gpt-4o",
-            ProviderType::Gemini => "gemini-2.0-flash",
+            ProviderType::Gemini => "gemini-3.6-flash",
             ProviderType::Ollama => "llama3",
         }
     }

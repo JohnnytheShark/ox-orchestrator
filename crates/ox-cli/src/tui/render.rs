@@ -14,7 +14,7 @@ impl TerminalRenderer {
         println!(
             r#"
    ____  _  __
-  / __ \| |/ /   ox-orchestrator v0.2.0
+  / __ \| |/ /   ox-orchestrator v0.2.1
  / /_/ /|   /    Minimalist & Secure AI Agent Harness
  \____//_/|_\    
 "#

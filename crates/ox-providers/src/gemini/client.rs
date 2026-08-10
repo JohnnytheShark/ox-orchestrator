@@ -75,22 +75,36 @@ impl LlmProvider for GeminiProvider {
         let mut byte_stream = response.bytes_stream();
 
         tokio::spawn(async move {
-            let mut buffer = String::new();
+            let mut buffer = Vec::new();
+            let mut usage = ox_core::types::TokenUsage::default();
 
             while let Ok(Some(chunk)) = byte_stream.try_next().await {
-                let chunk_str = match std::str::from_utf8(&chunk) {
-                    Ok(s) => s,
-                    Err(_) => continue,
-                };
-                buffer.push_str(chunk_str);
+                buffer.extend_from_slice(&chunk);
 
-                while let Some(pos) = buffer.find("\n\n") {
-                    let event_block = buffer[..pos].to_string();
-                    buffer = buffer[pos + 2..].to_string();
+                while let Some(pos) = buffer.windows(2).position(|w| w == b"\n\n") {
+                    let event_bytes = buffer[..pos].to_vec();
+                    buffer.drain(..pos + 2);
 
+                    let event_block = String::from_utf8_lossy(&event_bytes);
                     for line in event_block.lines() {
                         if let Some(data) = line.strip_prefix("data: ") {
                             if let Ok(v) = serde_json::from_str::<Value>(data.trim()) {
+                                // Parse token usage metadata
+                                if let Some(usage_metadata) = v.get("usageMetadata") {
+                                    if let Some(prompt_tokens) = usage_metadata
+                                        .get("promptTokenCount")
+                                        .and_then(|t| t.as_u64())
+                                    {
+                                        usage.input_tokens = prompt_tokens as usize;
+                                    }
+                                    if let Some(candidates_tokens) = usage_metadata
+                                        .get("candidatesTokenCount")
+                                        .and_then(|t| t.as_u64())
+                                    {
+                                        usage.output_tokens = candidates_tokens as usize;
+                                    }
+                                }
+
                                 if let Some(candidates) =
                                     v.get("candidates").and_then(|c| c.as_array())
                                 {
@@ -148,6 +162,13 @@ impl LlmProvider for GeminiProvider {
                     }
                 }
             }
+
+            let _ = tx
+                .send(Ok(StreamEvent::TurnCompleted {
+                    node_id: ox_core::NodeId::new(),
+                    usage,
+                }))
+                .await;
         });
 
         Ok(Box::pin(ChannelStream::new(rx)))

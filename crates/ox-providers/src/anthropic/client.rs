@@ -71,22 +71,20 @@ impl LlmProvider for AnthropicProvider {
         let mut byte_stream = response.bytes_stream();
 
         tokio::spawn(async move {
-            let mut buffer = String::new();
+            let mut buffer = Vec::new();
             let mut current_tool_id = String::new();
             let mut current_tool_name = String::new();
             let mut current_tool_input = String::new();
             let mut usage = TokenUsage::default();
 
             while let Ok(Some(chunk)) = byte_stream.try_next().await {
-                let chunk_str = match std::str::from_utf8(&chunk) {
-                    Ok(s) => s,
-                    Err(_) => continue,
-                };
-                buffer.push_str(chunk_str);
+                buffer.extend_from_slice(&chunk);
 
-                while let Some(pos) = buffer.find("\n\n") {
-                    let event_block = buffer[..pos].to_string();
-                    buffer = buffer[pos + 2..].to_string();
+                while let Some(pos) = buffer.windows(2).position(|w| w == b"\n\n") {
+                    let event_bytes = buffer[..pos].to_vec();
+                    buffer.drain(..pos + 2);
+
+                    let event_block = String::from_utf8_lossy(&event_bytes);
 
                     for line in event_block.lines() {
                         if let Some(data) = line.strip_prefix("data: ") {
