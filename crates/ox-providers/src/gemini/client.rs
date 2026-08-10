@@ -91,10 +91,16 @@ impl LlmProvider for GeminiProvider {
                             if let Ok(v) = serde_json::from_str::<Value>(data.trim()) {
                                 // Parse token usage metadata
                                 if let Some(usage_metadata) = v.get("usageMetadata") {
-                                    if let Some(prompt_tokens) = usage_metadata.get("promptTokenCount").and_then(|t| t.as_u64()) {
+                                    if let Some(prompt_tokens) = usage_metadata
+                                        .get("promptTokenCount")
+                                        .and_then(|t| t.as_u64())
+                                    {
                                         usage.input_tokens = prompt_tokens as usize;
                                     }
-                                    if let Some(candidates_tokens) = usage_metadata.get("candidatesTokenCount").and_then(|t| t.as_u64()) {
+                                    if let Some(candidates_tokens) = usage_metadata
+                                        .get("candidatesTokenCount")
+                                        .and_then(|t| t.as_u64())
+                                    {
                                         usage.output_tokens = candidates_tokens as usize;
                                     }
                                 }

@@ -46,8 +46,11 @@ data: {"candidates": [{"content": {"parts": [{"text": "world!"}],"role": "model"
 
     let provider = create_provider(config).unwrap();
     let messages = vec![Message::user("Hi")];
-    
-    let mut stream = provider.stream_chat(&messages, &[]).await.expect("stream_chat failed");
+
+    let mut stream = provider
+        .stream_chat(&messages, &[])
+        .await
+        .expect("stream_chat failed");
 
     let mut full_text = String::new();
     let mut final_usage = None;
@@ -65,7 +68,7 @@ data: {"candidates": [{"content": {"parts": [{"text": "world!"}],"role": "model"
     }
 
     assert_eq!(full_text, "Hello, world!");
-    
+
     let usage = final_usage.expect("TurnCompleted was not emitted");
     assert_eq!(usage.input_tokens, 10);
     assert_eq!(usage.output_tokens, 5);
