@@ -25,6 +25,20 @@ impl GeminiProvider {
     }
 }
 
+/// Finds the position of a `\n\n` or `\r\n\r\n` SSE event boundary in `buf`.
+/// Returns `(position_of_separator_start, length_of_separator)`.
+fn find_sse_boundary(buf: &[u8]) -> Option<(usize, usize)> {
+    // Prefer \r\n\r\n first (4-byte boundary used by Gemini)
+    if let Some(pos) = buf.windows(4).position(|w| w == b"\r\n\r\n") {
+        return Some((pos, 4));
+    }
+    // Fall back to \n\n (2-byte standard SSE boundary)
+    if let Some(pos) = buf.windows(2).position(|w| w == b"\n\n") {
+        return Some((pos, 2));
+    }
+    None
+}
+
 #[async_trait]
 impl LlmProvider for GeminiProvider {
     async fn stream_chat(
@@ -81,27 +95,29 @@ impl LlmProvider for GeminiProvider {
             while let Ok(Some(chunk)) = byte_stream.try_next().await {
                 buffer.extend_from_slice(&chunk);
 
-                while let Some(pos) = buffer.windows(2).position(|w| w == b"\n\n") {
+                while let Some((pos, sep_len)) = find_sse_boundary(&buffer) {
                     let event_bytes = buffer[..pos].to_vec();
-                    buffer.drain(..pos + 2);
+                    buffer.drain(..pos + sep_len);
 
                     let event_block = String::from_utf8_lossy(&event_bytes);
                     for line in event_block.lines() {
+                        // Strip any trailing \r left from \r\n line endings
+                        let line = line.trim_end_matches('\r');
                         if let Some(data) = line.strip_prefix("data: ") {
                             if let Ok(v) = serde_json::from_str::<Value>(data.trim()) {
                                 // Parse token usage metadata
                                 if let Some(usage_metadata) = v.get("usageMetadata") {
-                                    if let Some(prompt_tokens) = usage_metadata
+                                    if let Some(pt) = usage_metadata
                                         .get("promptTokenCount")
                                         .and_then(|t| t.as_u64())
                                     {
-                                        usage.input_tokens = prompt_tokens as usize;
+                                        usage.input_tokens = pt as usize;
                                     }
-                                    if let Some(candidates_tokens) = usage_metadata
+                                    if let Some(ct) = usage_metadata
                                         .get("candidatesTokenCount")
                                         .and_then(|t| t.as_u64())
                                     {
-                                        usage.output_tokens = candidates_tokens as usize;
+                                        usage.output_tokens = ct as usize;
                                     }
                                 }
 
@@ -114,9 +130,11 @@ impl LlmProvider for GeminiProvider {
                                                 content.get("parts").and_then(|p| p.as_array())
                                             {
                                                 for part in parts {
-                                                    // Text response
-                                                    if let Some(text) =
-                                                        part.get("text").and_then(|t| t.as_str())
+                                                    // Text response — skip empty strings
+                                                    if let Some(text) = part
+                                                        .get("text")
+                                                        .and_then(|t| t.as_str())
+                                                        .filter(|t| !t.is_empty())
                                                     {
                                                         let _ = tx
                                                             .send(Ok(StreamEvent::TextDelta {

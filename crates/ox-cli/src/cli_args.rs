@@ -42,7 +42,7 @@ pub enum Commands {
         session: Option<String>,
 
         /// Initial prompt to send immediately upon launch.
-        #[arg(short, long)]
+        #[arg(long)]
         prompt: Option<String>,
     },
 

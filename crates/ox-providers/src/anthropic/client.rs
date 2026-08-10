@@ -71,6 +71,15 @@ impl LlmProvider for AnthropicProvider {
         let mut byte_stream = response.bytes_stream();
 
         tokio::spawn(async move {
+            fn find_sse_boundary(buf: &[u8]) -> Option<(usize, usize)> {
+                if let Some(pos) = buf.windows(4).position(|w| w == b"\r\n\r\n") {
+                    return Some((pos, 4));
+                }
+                if let Some(pos) = buf.windows(2).position(|w| w == b"\n\n") {
+                    return Some((pos, 2));
+                }
+                None
+            }
             let mut buffer = Vec::new();
             let mut current_tool_id = String::new();
             let mut current_tool_name = String::new();
@@ -80,13 +89,14 @@ impl LlmProvider for AnthropicProvider {
             while let Ok(Some(chunk)) = byte_stream.try_next().await {
                 buffer.extend_from_slice(&chunk);
 
-                while let Some(pos) = buffer.windows(2).position(|w| w == b"\n\n") {
+                while let Some((pos, sep_len)) = find_sse_boundary(&buffer) {
                     let event_bytes = buffer[..pos].to_vec();
-                    buffer.drain(..pos + 2);
+                    buffer.drain(..pos + sep_len);
 
                     let event_block = String::from_utf8_lossy(&event_bytes);
 
                     for line in event_block.lines() {
+                        let line = line.trim_end_matches('\r');
                         if let Some(data) = line.strip_prefix("data: ") {
                             if data.trim() == "[DONE]" {
                                 break;
