@@ -36,6 +36,10 @@ fn find_sse_boundary(buf: &[u8]) -> Option<(usize, usize)> {
     if let Some(pos) = buf.windows(2).position(|w| w == b"\n\n") {
         return Some((pos, 2));
     }
+    // Fall back to \r\r
+    if let Some(pos) = buf.windows(2).position(|w| w == b"\r\r") {
+        return Some((pos, 2));
+    }
     None
 }
 

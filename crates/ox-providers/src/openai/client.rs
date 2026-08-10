@@ -83,6 +83,9 @@ impl LlmProvider for OpenAiProvider {
                 if let Some(pos) = buf.windows(2).position(|w| w == b"\n\n") {
                     return Some((pos, 2));
                 }
+                if let Some(pos) = buf.windows(2).position(|w| w == b"\r\r") {
+                    return Some((pos, 2));
+                }
                 None
             }
             let mut buffer = Vec::new();
