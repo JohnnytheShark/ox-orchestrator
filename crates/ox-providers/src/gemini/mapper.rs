@@ -32,6 +32,8 @@ pub enum GeminiPart {
     },
     FunctionCall {
         function_call: GeminiFunctionCall,
+        #[serde(rename = "thoughtSignature", skip_serializing_if = "Option::is_none")]
+        thought_signature: Option<String>,
     },
     FunctionResponse {
         function_response: GeminiFunctionResponse,
@@ -126,6 +128,7 @@ pub fn convert_messages(
                                 name: call.name.clone(),
                                 args: call.arguments.clone(),
                             },
+                            thought_signature: call.thought_signature.clone(),
                         }),
                         ContentBlock::ToolResult(_) => {}
                     }

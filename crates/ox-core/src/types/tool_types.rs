@@ -23,6 +23,7 @@ pub struct ToolCall {
     pub id: ToolCallId,
     pub name: String,
     pub arguments: Value,
+    pub thought_signature: Option<String>,
 }
 
 impl ToolCall {
@@ -31,7 +32,13 @@ impl ToolCall {
             id: ToolCallId::new(id),
             name: name.into(),
             arguments,
+            thought_signature: None,
         }
+    }
+
+    pub fn with_thought_signature(mut self, signature: impl Into<String>) -> Self {
+        self.thought_signature = Some(signature.into());
+        self
     }
 }
 

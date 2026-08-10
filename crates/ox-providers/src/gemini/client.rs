@@ -156,11 +156,18 @@ impl LlmProvider for GeminiProvider {
                                                                         serde_json::Map::new(),
                                                                     )
                                                                 });
-                                                            let call = ToolCall::new(
+                                                            let mut call = ToolCall::new(
                                                                 uuid::Uuid::new_v4().to_string(),
                                                                 name,
                                                                 args,
                                                             );
+                                                            if let Some(sig) = part
+                                                                .get("thoughtSignature")
+                                                                .and_then(|s| s.as_str())
+                                                            {
+                                                                call = call
+                                                                    .with_thought_signature(sig);
+                                                            }
                                                             let _ = tx
                                                                 .send(Ok(
                                                                     StreamEvent::ToolCallStarted {
