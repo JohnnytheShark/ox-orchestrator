@@ -212,10 +212,13 @@ pub async fn run_chat(
                         println!("Usage: /model <model_name>");
                         continue;
                     }
-                    let provider_type = ox_providers::ProviderType::infer_from_model_name(new_model);
+                    let provider_type =
+                        ox_providers::ProviderType::infer_from_model_name(new_model);
                     let new_config = ox_providers::ProviderConfig::new(provider_type, new_model);
-                    
-                    if provider_type != ox_providers::ProviderType::Ollama && new_config.get_api_key().is_none() {
+
+                    if provider_type != ox_providers::ProviderType::Ollama
+                        && new_config.get_api_key().is_none()
+                    {
                         TerminalRenderer::print_error(&format!("Cannot switch to model: No API key found for provider '{:?}'. Please configure it in your environment.", provider_type));
                         continue;
                     }
@@ -226,7 +229,10 @@ pub async fn run_chat(
                             println!("Switched model to {}", new_model);
                         }
                         Err(e) => {
-                            TerminalRenderer::print_error(&format!("Failed to switch model: {}", e));
+                            TerminalRenderer::print_error(&format!(
+                                "Failed to switch model: {}",
+                                e
+                            ));
                         }
                     }
                     continue;
