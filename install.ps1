@@ -21,7 +21,7 @@ $Target = "x86_64-pc-windows-msvc"
 
 # 2. Get Latest Tag
 Write-Host "[+] Querying GitHub for latest release..." -ForegroundColor Green
-$Tag = "v0.2.1"
+$Tag = "v0.0.0"
 try {
     $ReleaseInfo = Invoke-RestMethod -Uri $GitHubApi -Headers @{ "User-Agent" = "ox-installer" }
     if ($ReleaseInfo.tag_name) {

@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Tag name (e.g. v0.2.1)'
+        description: 'Tag name (e.g. v0.0.0)'
         required: true
-        default: 'v0.2.1'
+        default: 'v0.0.0'
 
 permissions:
   contents: write
@@ -71,6 +71,28 @@ jobs:
         if: matrix.use_cross
         uses: taiki-e/install-action@cross
 
+      - name: Inject Version
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name || github.event.inputs.tag_name || 'v0.0.0' }}"
+          VERSION="${TAG#v}"
+          echo "Injecting version: $VERSION"
+          FILES=(
+            "Cargo.toml"
+            "README.md"
+            "install.sh"
+            "install.ps1"
+            "site/app.js"
+            "site/index.html"
+            "crates/ox-cli/src/tui/render.rs"
+            "docs/tutorials/01_getting_started.md"
+          )
+          for file in "${FILES[@]}"; do
+            if [ -f "$file" ]; then
+              sed -i "s/\b0\.0\.0\b/${VERSION}/g" "$file"
+            fi
+          done
+
       - name: Build release binary (Standard)
         if: "!matrix.use_cross"
         run: |
@@ -85,7 +107,7 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          TAG="${{ github.ref_name || github.event.inputs.tag_name || 'v0.2.1' }}"
+          TAG="${{ github.ref_name || github.event.inputs.tag_name || 'v0.0.0' }}"
           ARCHIVE_NAME="ox-${TAG}-${{ matrix.target }}"
           STAGE_DIR="stage/${ARCHIVE_NAME}"
           mkdir -p "${STAGE_DIR}"
@@ -108,7 +130,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $TAG = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } elseif ($env:INPUT_TAG_NAME) { $env:INPUT_TAG_NAME } else { "v0.2.1" }
+          $TAG = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } elseif ($env:INPUT_TAG_NAME) { $env:INPUT_TAG_NAME } else { "v0.0.0" }
           $ARCHIVE_NAME = "ox-$TAG-${{ matrix.target }}"
           $STAGE_DIR = "stage/$ARCHIVE_NAME"
           New-Item -ItemType Directory -Force -Path $STAGE_DIR | Out-Null
