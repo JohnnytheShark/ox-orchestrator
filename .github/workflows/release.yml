@@ -121,7 +121,8 @@ jobs:
           )
           for file in "${FILES[@]}"; do
             if [ -f "$file" ]; then
-              sed -i "s/\b0\.0\.0\b/${VERSION}/g" "$file"
+              sed -i.bak "s/\b0\.0\.0\b/${VERSION}/g" "$file"
+              rm -f "$file.bak"
             fi
           done
 
