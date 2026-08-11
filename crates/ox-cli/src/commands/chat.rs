@@ -1,5 +1,6 @@
 use crate::config::{ConfigResolver, OxConfigFile};
 use crate::tui::{ApprovalDecision, HitlPrompter, TerminalRenderer};
+use crossterm::style::Stylize;
 use futures_util::StreamExt;
 use ox_core::agent::{AgentConfig, AgentEngine, StreamEvent};
 use ox_core::session::{NodeId, SessionStorage, SessionTree};
@@ -9,7 +10,6 @@ use ox_security::{EnvScrubber, PathJail};
 use ox_tools::{ToolContext, ToolDispatcher};
 use std::io;
 use std::path::PathBuf;
-use crossterm::style::Stylize;
 
 pub async fn run_chat(
     provider_config: ProviderConfig,
@@ -110,7 +110,9 @@ pub async fn run_chat(
                     println!("  /checkout <id>    - Switch active branch to historical node ID");
                     println!("  /save             - Manually save session snapshot to disk");
                     println!("  /history          - Print linear conversation history");
-                    println!("  /sidequest <msg>  - Ask a question without interrupting current flow");
+                    println!(
+                        "  /sidequest <msg>  - Ask a question without interrupting current flow"
+                    );
                     println!("  /auto             - Toggle auto-approve for mutating tools");
                     println!("  /exit, /quit      - Save session and exit\n");
                     continue;
@@ -198,12 +200,15 @@ pub async fn run_chat(
                 "/sidequest" => {
                     let side_prompt = parts.collect::<Vec<_>>().join(" ");
                     if side_prompt.is_empty() {
-                        println!("{}", "[sidequest] Usage: /sidequest <your question>".magenta());
+                        println!(
+                            "{}",
+                            "[sidequest] Usage: /sidequest <your question>".magenta()
+                        );
                         continue;
                     }
 
                     let original_leaf = engine.session.current_leaf_id.clone();
-                    
+
                     println!("{}", "[sidequest] --- Starting Sidequest ---".magenta());
                     let res = process_prompt(
                         Some(&side_prompt),
@@ -213,7 +218,8 @@ pub async fn run_chat(
                         &tool_context,
                         &storage,
                         &mut auto_approve,
-                    ).await;
+                    )
+                    .await;
                     println!("{}", "[sidequest] --- Sidequest Completed ---".magenta());
 
                     if let Some(leaf) = original_leaf {
@@ -222,11 +228,12 @@ pub async fn run_chat(
                         engine.session.current_leaf_id = None;
                     }
                     let _ = storage.save(&engine.session);
-                    println!("{}", "[sidequest] Returned to original session flow.".magenta());
+                    println!(
+                        "{}",
+                        "[sidequest] Returned to original session flow.".magenta()
+                    );
 
-                    if let Err(e) = res {
-                        return Err(e);
-                    }
+                    res?;
                     continue;
                 }
                 "/retry" => {
