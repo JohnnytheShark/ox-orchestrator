@@ -79,7 +79,7 @@ mod tests {
                 "code": "insufficient_quota"
             }
         }"#;
-        
+
         let err = ProviderError::ApiError {
             status: 429,
             body: json_body.to_string(),
