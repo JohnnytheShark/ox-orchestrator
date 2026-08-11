@@ -1,5 +1,6 @@
 use crate::config::{ConfigResolver, OxConfigFile};
 use crate::tui::{ApprovalDecision, HitlPrompter, TerminalRenderer};
+use crossterm::style::Stylize;
 use futures_util::StreamExt;
 use ox_core::agent::{AgentConfig, AgentEngine, StreamEvent};
 use ox_core::session::{NodeId, SessionStorage, SessionTree};
@@ -58,12 +59,12 @@ pub async fn run_chat(
         &workspace_root,
     );
 
-    let provider = create_provider(provider_config)?;
+    let mut provider = create_provider(provider_config)?;
 
     // Handle optional initial prompt
     if let Some(prompt) = initial_prompt {
         process_prompt(
-            &prompt,
+            Some(&prompt),
             &mut engine,
             &*provider,
             &dispatcher,
@@ -109,6 +110,9 @@ pub async fn run_chat(
                     println!("  /checkout <id>    - Switch active branch to historical node ID");
                     println!("  /save             - Manually save session snapshot to disk");
                     println!("  /history          - Print linear conversation history");
+                    println!(
+                        "  /sidequest <msg>  - Ask a question without interrupting current flow"
+                    );
                     println!("  /auto             - Toggle auto-approve for mutating tools");
                     println!("  /exit, /quit      - Save session and exit\n");
                     continue;
@@ -193,6 +197,89 @@ pub async fn run_chat(
                     println!("Saved to {}", path.display());
                     continue;
                 }
+                "/sidequest" => {
+                    let side_prompt = parts.collect::<Vec<_>>().join(" ");
+                    if side_prompt.is_empty() {
+                        println!(
+                            "{}",
+                            "[sidequest] Usage: /sidequest <your question>".magenta()
+                        );
+                        continue;
+                    }
+
+                    let original_leaf = engine.session.current_leaf_id.clone();
+
+                    println!("{}", "[sidequest] --- Starting Sidequest ---".magenta());
+                    let res = process_prompt(
+                        Some(&side_prompt),
+                        &mut engine,
+                        &*provider,
+                        &dispatcher,
+                        &tool_context,
+                        &storage,
+                        &mut auto_approve,
+                    )
+                    .await;
+                    println!("{}", "[sidequest] --- Sidequest Completed ---".magenta());
+
+                    if let Some(leaf) = original_leaf {
+                        let _ = engine.session.checkout(&leaf);
+                    } else {
+                        engine.session.current_leaf_id = None;
+                    }
+                    let _ = storage.save(&engine.session);
+                    println!(
+                        "{}",
+                        "[sidequest] Returned to original session flow.".magenta()
+                    );
+
+                    res?;
+                    continue;
+                }
+                "/retry" => {
+                    process_prompt(
+                        None,
+                        &mut engine,
+                        &*provider,
+                        &dispatcher,
+                        &tool_context,
+                        &storage,
+                        &mut auto_approve,
+                    )
+                    .await?;
+                    continue;
+                }
+                "/model" => {
+                    let new_model = parts.next().unwrap_or_default();
+                    if new_model.is_empty() {
+                        println!("Usage: /model <model_name>");
+                        continue;
+                    }
+                    let provider_type =
+                        ox_providers::ProviderType::infer_from_model_name(new_model);
+                    let new_config = ox_providers::ProviderConfig::new(provider_type, new_model);
+
+                    if provider_type != ox_providers::ProviderType::Ollama
+                        && new_config.get_api_key().is_none()
+                    {
+                        TerminalRenderer::print_error(&format!("Cannot switch to model: No API key found for provider '{:?}'. Please configure it in your environment.", provider_type));
+                        continue;
+                    }
+
+                    match ox_providers::create_provider(new_config) {
+                        Ok(new_p) => {
+                            provider = new_p;
+                            println!("Switched model to {}", new_model);
+                        }
+                        Err(e) => {
+                            TerminalRenderer::print_error(&format!(
+                                "Failed to switch model: {}",
+                                e
+                            ));
+                        }
+                    }
+                    continue;
+                }
                 _ => {
                     println!("Unknown command '{}'. Type /help for assistance.", cmd);
                     continue;
@@ -201,7 +288,7 @@ pub async fn run_chat(
         }
 
         process_prompt(
-            trimmed,
+            Some(trimmed),
             &mut engine,
             &*provider,
             &dispatcher,
@@ -216,7 +303,7 @@ pub async fn run_chat(
 }
 
 async fn process_prompt(
-    user_prompt: &str,
+    user_prompt: Option<&str>,
     engine: &mut AgentEngine,
     provider: &dyn ox_providers::LlmProvider,
     dispatcher: &ToolDispatcher,
@@ -224,7 +311,9 @@ async fn process_prompt(
     storage: &SessionStorage,
     auto_approve: &mut bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    engine.submit_user_message(user_prompt);
+    if let Some(prompt) = user_prompt {
+        engine.submit_user_message(prompt);
+    }
 
     let mut turn_count = 0;
     let max_turns = engine.config.max_turns_per_step;
@@ -242,7 +331,7 @@ async fn process_prompt(
         {
             Ok(s) => s,
             Err(e) => {
-                TerminalRenderer::print_error(&format!("LLM Provider error: {}", e));
+                TerminalRenderer::print_error(&e.extract_clean_message());
                 break;
             }
         };
@@ -270,7 +359,7 @@ async fn process_prompt(
                 }
                 Ok(_) => {}
                 Err(e) => {
-                    TerminalRenderer::print_error(&format!("Stream error: {}", e));
+                    TerminalRenderer::print_error(&e.extract_clean_message());
                 }
             }
         }

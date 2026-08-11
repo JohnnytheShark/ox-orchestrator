@@ -65,7 +65,7 @@ You will be greeted by the `ox` banner showing your active provider, workspace p
 
 ```text
    ____  _  __
-  / __ \| |/ /   ox-orchestrator v0.2.1
+  / __ \| |/ /   ox-orchestrator v0.0.0
  / /_/ /|   /    Minimalist & Secure AI Agent Harness
  \____//_/|_\    
 

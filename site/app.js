@@ -76,7 +76,7 @@ You will be greeted by the \`ox\` banner showing your active provider, workspace
 
 \`\`\`text
    ____  _  __
-  / __ \\| |/ /   ox-orchestrator v0.2.1
+  / __ \\| |/ /   ox-orchestrator v0.0.0
  / /_/ /|   /    Minimalist & Secure AI Agent Harness
  \\____//_/|_\\    
 
@@ -796,7 +796,7 @@ let currentDocKey = "tutorials/01_getting_started.md";
 // Terminal Demo Script
 const TERMINAL_STEPS = [
   { type: "prompt", text: "ox chat --model claude-3-7-sonnet-20250219" },
-  { type: "banner", text: "   ____  _  __\n  / __ \\| |/ /   ox-orchestrator v0.2.1\n / /_/ /|   /    Minimalist & Secure AI Agent Harness\n \\____//_/|_\\    \n\n Provider  : Anthropic (claude-3-7-sonnet-20250219)\n Workspace : /home/user/project\n Session   : session-a1b2c3d4\n Security  : Path-Jailed, Env-Scrubbed, Zeroized" },
+  { type: "banner", text: "   ____  _  __\n  / __ \\| |/ /   ox-orchestrator v0.0.0\n / /_/ /|   /    Minimalist & Secure AI Agent Harness\n \\____//_/|_\\    \n\n Provider  : Anthropic (claude-3-7-sonnet-20250219)\n Workspace : /home/user/project\n Session   : session-a1b2c3d4\n Security  : Path-Jailed, Env-Scrubbed, Zeroized" },
   { type: "user", text: "Find all Rust source files and audit them for unsafe blocks." },
   { type: "tool", text: "[TOOL] find_files({\"pattern\": \"*.rs\"}) -> 12 files discovered." },
   { type: "tool", text: "[TOOL] grep_search({\"query\": \"unsafe {\"}) -> 0 unsafe blocks found." },
@@ -1118,7 +1118,7 @@ function jumpToDagCheckpoint(stepIndex) {
   if (stepIndex === 0) {
     // Root checkpoint
     appendTerminalLine({ type: "prompt", text: "ox chat --model claude-3-7-sonnet-20250219" });
-    appendTerminalLine({ type: "banner", text: "   ____  _  __\n  / __ \\| |/ /   ox-orchestrator v0.2.1\n / /_/ /|   /    Minimalist & Secure AI Agent Harness\n \\____//_/|_\\    \n\n Provider  : Anthropic (claude-3-7-sonnet-20250219)\n Workspace : /home/user/project\n Session   : session-a1b2c3d4 (checkpoint: root)\n Security  : Path-Jailed, Env-Scrubbed, Zeroized" });
+    appendTerminalLine({ type: "banner", text: "   ____  _  __\n  / __ \\| |/ /   ox-orchestrator v0.0.0\n / /_/ /|   /    Minimalist & Secure AI Agent Harness\n \\____//_/|_\\    \n\n Provider  : Anthropic (claude-3-7-sonnet-20250219)\n Workspace : /home/user/project\n Session   : session-a1b2c3d4 (checkpoint: root)\n Security  : Path-Jailed, Env-Scrubbed, Zeroized" });
   } else if (stepIndex === 1) {
     // Turn 1: Workspace scan
     appendTerminalLine({ type: "prompt", text: "ox chat --model claude-3-7-sonnet-20250219" });

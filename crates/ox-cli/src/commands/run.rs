@@ -57,7 +57,7 @@ pub async fn run_prompt(
         {
             Ok(s) => s,
             Err(e) => {
-                eprintln!("[ERROR] LLM Provider error: {}", e);
+                eprintln!("[ERROR] {}", e.extract_clean_message());
                 break;
             }
         };
@@ -85,7 +85,7 @@ pub async fn run_prompt(
                 }
                 Ok(_) => {}
                 Err(e) => {
-                    eprintln!("\n[ERROR] Stream error: {}", e);
+                    eprintln!("\n[ERROR] {}", e.extract_clean_message());
                 }
             }
         }
