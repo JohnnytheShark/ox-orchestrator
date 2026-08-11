@@ -255,9 +255,13 @@ pub async fn run_chat(
                         println!("Usage: /model <model_name>");
                         continue;
                     }
-                    let provider_type =
-                        ox_providers::ProviderType::infer_from_model_name(new_model);
-                    let new_config = ox_providers::ProviderConfig::new(provider_type, new_model);
+                    let new_config = ConfigResolver::resolve_provider_config(
+                        Some(new_model),
+                        None,
+                        None,
+                        &config_file,
+                    );
+                    let provider_type = new_config.provider_type;
 
                     if provider_type != ox_providers::ProviderType::Ollama
                         && new_config.get_api_key().is_none()
